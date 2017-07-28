@@ -41,7 +41,7 @@ namespace AcademicSupport
 
         Dictionary<string, TrackedFile> _trackedFiles;
 
-        private string _logfileName = "ChangeLog.txt";
+        private string _logfileName = ".system\\ChangeLog.txt";
 
         private FileInfo LogFile
         {
