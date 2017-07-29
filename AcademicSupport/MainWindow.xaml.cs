@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using AcademicSupport.Properties;
+using LiveCharts;
 
 namespace AcademicSupport
 {
@@ -25,8 +28,27 @@ namespace AcademicSupport
         {
             if (!SaveConfig())
                 return;
-            
             UpdateWordCount();
+            UpdateDisplay();
+        }
+
+        private void UpdateDisplay()
+        {
+            LoadTrackedFiles();
+            var sc = new SeriesCollection();
+            var minDate = MinDate().Date;
+            foreach (var trackedFilesValue in _trackedFiles)
+            {
+                var ser = trackedFilesValue.Value.ToSeries(minDate);
+                ser.Title = trackedFilesValue.Key;
+                sc.Add(ser);
+            }
+            Display.SeriesCollection = sc;
+        }
+
+        private DateTime MinDate()
+        {
+            return _trackedFiles.Values.Min(x => x.MinDate());
         }
 
         private bool SaveConfig()
@@ -94,7 +116,8 @@ namespace AcademicSupport
             var log = LogFile;
             if (log == null)
                 return;
-
+            if (!log.Exists)
+                return;
             using (var logF = log.OpenText())
             {
                 string line;

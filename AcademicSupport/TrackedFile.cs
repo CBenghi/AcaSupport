@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AcademicSupport
 {
-    internal class TrackedFile
+    internal partial class TrackedFile
     {
         public FileInfo File;
         private List<TrackedFileStat> _stats = new List<TrackedFileStat>();
-        
+
+        public IEnumerable<DateTime> Dates
+        {
+            get { return _stats.Select(x => x.TimeStamp); }
+        }
+
+        public DateTime MinDate()
+        {
+            return Dates.Min();
+        }
+
         public TrackedFile(FileInfo file)
         {
             File = file;
@@ -45,30 +56,22 @@ namespace AcademicSupport
 
         public bool Evaluate()
         {
-            var needUpdate = false;
             using (var f = File.OpenText())
             {
-                var wordCount = 0;
+                var all = f.ReadToEnd();
+                var wordCount = WordCount(all);
+                var needUpdate = LatestStat == null || wordCount != LatestStat.WordCount;
 
-                string all = f.ReadToEnd();
-                wordCount = WordCount(all);
-
-                string line;
-                
-
-                needUpdate = LatestStat == null || wordCount != LatestStat.WordCount;
-
-                if (needUpdate)
+                if (!needUpdate)
+                    return false;
+                var t = new TrackedFileStat
                 {
-                    var t = new TrackedFileStat
-                    {
-                        WordCount = wordCount,
-                        TimeStamp = DateTime.Now
-                    };
-                    AddStat(t);
-                }
+                    WordCount = wordCount,
+                    TimeStamp = File.LastWriteTime
+                };
+                AddStat(t);
             }
-            return needUpdate;
+            return true;
         }
 
         private static int WordCount(string text)

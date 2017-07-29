@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
-    internal class TrackedFileStat
+    internal partial class TrackedFileStat
     {
         internal static TrackedFileStat Unpersist(string persistedString)
         {
@@ -25,7 +25,7 @@ namespace AcademicSupport
 
         public bool IsNewerThan(TrackedFileStat otherStat)
         {
-            return TimeStamp > otherStat.TimeStamp;
+            return TimeStamp >= otherStat.TimeStamp;
         }
 
         public string Persist()
@@ -33,4 +33,6 @@ namespace AcademicSupport
             return $"{TimeStamp:O},{WordCount}";
         }
     }
+
+   
 }
