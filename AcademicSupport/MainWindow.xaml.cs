@@ -22,6 +22,8 @@ namespace AcademicSupport
                 var d = new DirectoryInfo(".");
                 TxtFolder.Text = d.FullName;
             }
+            if (!TxtFolder.Text.EndsWith(".system"))
+                UpdateDisplay();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)

@@ -20,6 +20,9 @@ namespace AcademicSupport
                 var ts = trackedFileStat.TimeStamp - referenceDate;
                 double rounded = Math.Round(ts.TotalDays * 20) /20 ;
                 pts.Add(new ObservablePoint(rounded, trackedFileStat.WordCount));
+                
+                // pts.Add(new DatetimePoint(rounded, trackedFileStat.WordCount));
+
             }
             
             var v = new LineSeries

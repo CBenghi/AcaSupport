@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <lvc:CartesianChart Series="{Binding SeriesCollection}"/>
+        <lvc:CartesianChart x:Name="Display" Series="{Binding SeriesCollection}" />
     </Grid>
 </UserControl>
