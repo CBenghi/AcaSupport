@@ -38,12 +38,14 @@ namespace AcademicSupport
 
         public void AddStat(TrackedFileStat stat)
         {
+            stat.SetParent(this);
             if (LatestStat == null)
                 LatestStat = stat;
             else if (stat.IsNewerThan(LatestStat))
                 LatestStat = stat;
-
-            _stats.Add(stat);    
+            _stats.Add(stat);
+            
+            _sorted = false;
         }
 
         public TrackedFileStat LatestStat { get; private set; }
@@ -113,6 +115,38 @@ namespace AcademicSupport
         {
             var bname = BareName(File, fld);
             return $"\"{bname}\",{LatestStat.Persist()}";
+        }
+
+        bool _sorted = true;
+
+        public void EnsureSorted()
+        {
+            if (_sorted)
+                return;
+            _stats.Sort((x, y) => DateTime.Compare(x.TimeStamp, y.TimeStamp));
+
+            int prev = 0;
+            foreach (var trackedFileStat in _stats)
+            {
+                trackedFileStat.SetPreviousCount(prev);
+                prev = trackedFileStat.WordCount;
+            }
+            _sorted = true;
+        }
+
+        Dictionary<DateTime, int> DailyProduction()
+        {
+            var ret = new Dictionary<DateTime, int>();
+            foreach (var trackedFileStat in _stats)
+            {
+                var justdate = trackedFileStat.TimeStamp.Date;
+                if (!ret.ContainsKey(justdate))
+                {
+                    ret.Add(justdate, 0);
+                }
+                ret[justdate] += trackedFileStat.Delta;
+            }
+            return ret;
         }
     }
 }

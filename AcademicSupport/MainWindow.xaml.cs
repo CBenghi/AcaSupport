@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using AcademicSupport.Properties;
 using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace AcademicSupport
 {
@@ -37,6 +38,48 @@ namespace AcademicSupport
         private void UpdateDisplay()
         {
             LoadTrackedFiles();
+            UpdateFileCountCurve();
+            UpdateDailyCountBars();
+        }
+
+        private void UpdateDailyCountBars()
+        {
+            var sc = new SeriesCollection();
+            var runDate = MinDate().Date; // start from date only;
+            var required = new List<DateTime>();
+
+            var tonight = DateTime.Now.Date.AddDays(1);
+
+            while (runDate < tonight)
+            {
+                required.Add(runDate);
+                runDate = runDate.AddDays(1);
+            }
+            
+            foreach (var trackedFilesValue in _trackedFiles)
+            {
+                var ser = trackedFilesValue.Value.DailySeries(required);
+                ser.Title = trackedFilesValue.Key;
+                sc.Add(ser);
+            }
+
+            DailyCountBars.Labels = new[]
+            {
+                "1 mis",
+                "2 mis",
+                "3 mis",
+                "4 mis",
+                "5 mis",
+                "6 mis",
+                "7 mis",
+                "8 mis",
+                "9 mis"
+            };
+            DailyCountBars.SeriesCollection = sc;
+        }
+
+        private void UpdateFileCountCurve()
+        {
             var sc = new SeriesCollection();
             var minDate = MinDate().Date;
             foreach (var trackedFilesValue in _trackedFiles)
@@ -45,7 +88,7 @@ namespace AcademicSupport
                 ser.Title = trackedFilesValue.Key;
                 sc.Add(ser);
             }
-            Display.SeriesCollection = sc;
+            FileCountCurve.SeriesCollection = sc;
         }
 
         private DateTime MinDate()
@@ -142,6 +185,27 @@ namespace AcademicSupport
         DirectoryInfo GetFolder()
         {
             return new DirectoryInfo(TxtFolder.Text);
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            var SeriesCollection = new SeriesCollection
+            {
+                new StackedColumnSeries
+                {
+                    Values = new ChartValues<double> {1, 2, 3, 4},
+                    StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
+                    DataLabels = true
+                },
+                new StackedColumnSeries
+                {
+                    Values = new ChartValues<double> {4, 4, 4, 4},
+                    StackMode = StackMode.Values,
+                    DataLabels = true
+                }
+            };
+
+            DailyCountBars.SeriesCollection = SeriesCollection;
         }
     }
 }

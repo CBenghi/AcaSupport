@@ -4,13 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AcademicSupport"
-        xmlns:irregularIntervals="clr-namespace:Wpf.CartesianChart.Irregular_Intervals"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
         <Button x:Name="button" Content="Update word count" Margin="0,0,10,10" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="button_Click"/>
-        <irregularIntervals:IrregularIntervalsExample x:Name="Display" Margin="17,42,10,35" />
+        <Button x:Name="button2" Content="Update word count" Margin="0,0,352,10" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="button2_Click"/>
+        
+        
+        
+        
+
+        <TabControl x:Name="tabControl" Margin="17,42,10,35">
+            <TabItem Header="File count curve">
+                <local:IrregularIntervals x:Name="FileCountCurve" Margin="5" />
+            </TabItem>
+            <TabItem Header="Daily count bars">
+                <local:StackedColumn x:Name="DailyCountBars" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

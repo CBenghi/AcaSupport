@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 using LiveCharts;
-using LiveCharts.Defaults;
-using LiveCharts.Wpf;
 
-namespace Wpf.CartesianChart.Irregular_Intervals
+namespace AcademicSupport
 {
-    public partial class IrregularIntervalsExample : UserControl
+    public partial class IrregularIntervals : UserControl
     {
-        private SeriesCollection _seriesCollection;
-
-        public IrregularIntervalsExample()
+        public IrregularIntervals()
         {
             InitializeComponent();
             DataContext = this;
         }
-        
+
+        private SeriesCollection _seriesCollection;
+
         public SeriesCollection SeriesCollection
         {
             get { return _seriesCollection; }
@@ -34,11 +30,13 @@ namespace Wpf.CartesianChart.Irregular_Intervals
                     _seriesCollection.Clear();
                     _seriesCollection.AddRange(value);
 
-                    Display.AxisY.FirstOrDefault().MinValue = 0;
+                    var f = Display.AxisY.FirstOrDefault();
+                    if (f != null)
+                        f.MinValue = 0;
                 }
                 catch (Exception)
                 {
-                    
+                    // ignored
                 }
             }
         }

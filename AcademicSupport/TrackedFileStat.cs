@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
     internal partial class TrackedFileStat
     {
+        private TrackedFile _parent;
+
         internal static TrackedFileStat Unpersist(string persistedString)
         {
             var ret = new TrackedFileStat();
@@ -18,6 +18,16 @@ namespace AcademicSupport
             if (cnt > 1)
                 ret.WordCount = Convert.ToInt32(vals[1]);
             return ret;
+        }
+
+        private int _delta;
+        public int Delta
+        {
+            get
+            {
+                _parent.EnsureSorted();
+                return _delta;
+            }
         }
 
         public DateTime TimeStamp;
@@ -32,7 +42,15 @@ namespace AcademicSupport
         {
             return $"{TimeStamp:O},{WordCount}";
         }
-    }
 
-   
+        public void SetPreviousCount(int prev)
+        {
+            _delta = WordCount - prev;
+        }
+
+        public void SetParent(TrackedFile trackedFile)
+        {
+            _parent = trackedFile;
+        }
+    }
 }
