@@ -9,7 +9,7 @@
     <Grid>
         <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Bottom">
             <lvc:CartesianChart.AxisX>
-                <lvc:Axis Labels="{Binding Labels}" 
+                <lvc:Axis Labels="{Binding Labels}" Title="{Binding Title}"
                           Separator="{x:Static lvc:DefaultAxes.CleanSeparator}" />
             </lvc:CartesianChart.AxisX>
             <lvc:CartesianChart.AxisY>

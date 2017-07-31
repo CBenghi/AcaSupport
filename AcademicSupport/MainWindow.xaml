@@ -10,11 +10,6 @@
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
         <Button x:Name="button" Content="Update word count" Margin="0,0,10,10" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="button_Click"/>
-        <Button x:Name="button2" Content="Update word count" Margin="0,0,352,10" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="button2_Click"/>
-        
-        
-        
-        
 
         <TabControl x:Name="tabControl" Margin="17,42,10,35">
             <TabItem Header="File count curve">

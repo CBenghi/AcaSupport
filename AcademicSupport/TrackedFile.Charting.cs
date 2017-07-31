@@ -52,9 +52,10 @@ namespace AcademicSupport
 
         public StackedColumnSeries DailySeries(List<DateTime> requiredDays)
         {
-            var v = new ChartValues<double> {1, 0, 3, 4};
             return new StackedColumnSeries
                 {
+                    LabelsPosition = BarLabelPosition.Perpendicular,
+                    MaxColumnWidth = 80,
                     Values = DailyValues(requiredDays),
                     StackMode = StackMode.Values,
                     DataLabels = true

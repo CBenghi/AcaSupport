@@ -14,28 +14,29 @@ namespace AcademicSupport
         {
             InitializeComponent();
 
-            SeriesCollection = new SeriesCollection
-            {
-                new StackedColumnSeries
-                {
-                    Values = new ChartValues<double> {1, 2, 3, 4},
-                    StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
-                    DataLabels = true
-                },
-                new StackedColumnSeries
-                {
-                    Values = new ChartValues<double> {4, 4, 4, 4},
-                    StackMode = StackMode.Values,
-                    DataLabels = true
-                }
-            };          
+            SeriesCollection = new SeriesCollection();
+            //{
+            //    new StackedColumnSeries
+            //    {
+            //        Values = new ChartValues<double> {1, 2, 3, 4},
+            //        StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
+            //        DataLabels = true
+            //    },
+            //    new StackedColumnSeries
+            //    {
+            //        Values = new ChartValues<double> {4, 4, 4, 4},
+            //        StackMode = StackMode.Values,
+            //        DataLabels = true
+            //    }
+            //};          
 
-            Labels = new[] { "Chrome", "Mozilla", "Opera", "IE" };
+            //Labels = new[] { "Chrome", "Mozilla", "Opera", "IE" };
             
             DataContext = this;
         }
 
-        
+        public string Title { get; set; }
+
         public string[] Labels { get; set; }
 
         private SeriesCollection _seriesCollection;

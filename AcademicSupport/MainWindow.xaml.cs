@@ -14,6 +14,8 @@ namespace AcademicSupport
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<string> _ignoredFiles = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,50 +44,81 @@ namespace AcademicSupport
             UpdateDailyCountBars();
         }
 
+        private IEnumerable<TrackedFile> FileToChart
+        {
+            get
+            {
+                foreach (var trackedFile in _trackedFiles)
+                {
+                    if (_ignoredFiles.Contains(trackedFile.Key))
+                        continue;
+                    yield return trackedFile.Value;
+                }
+            }
+        }
+
         private void UpdateDailyCountBars()
         {
             var sc = new SeriesCollection();
             var runDate = MinDate().Date; // start from date only;
+            var oneWeekDate = DateTime.Now.Date.AddDays(-7);
+
+            runDate = (runDate > oneWeekDate ? runDate : oneWeekDate);
+
             var required = new List<DateTime>();
 
             var tonight = DateTime.Now.Date.AddDays(1);
-
+            var labels = new List<string>();
             while (runDate < tonight)
             {
+                labels.Add(runDate.ToShortDateString());
                 required.Add(runDate);
                 runDate = runDate.AddDays(1);
             }
-            
-            foreach (var trackedFilesValue in _trackedFiles)
+
+            var tot = 0;
+            var activeDays = 0;
+
+            foreach (var trackedFilesValue in FileToChart)
             {
-                var ser = trackedFilesValue.Value.DailySeries(required);
-                ser.Title = trackedFilesValue.Key;
+                var ser = trackedFilesValue.DailySeries(required);
+                var thisday = CountWords(ser);
+                if (thisday > 0)
+                    activeDays++;
+                tot += thisday;
+                var bareName = TrackedFile.BareName(trackedFilesValue.File, GetFolder());
+                ser.Title = bareName;
                 sc.Add(ser);
             }
 
-            DailyCountBars.Labels = new[]
-            {
-                "1 mis",
-                "2 mis",
-                "3 mis",
-                "4 mis",
-                "5 mis",
-                "6 mis",
-                "7 mis",
-                "8 mis",
-                "9 mis"
-            };
+            var title = $"{tot / labels.Count} words per day";
+            if (activeDays > 0)
+                title += $" ({tot / activeDays} words per active day)";
+
+            DailyCountBars.Title = title;
+            DailyCountBars.Labels = labels.ToArray();
             DailyCountBars.SeriesCollection = sc;
+        }
+
+        private int CountWords(StackedColumnSeries ser)
+        {
+            var tot = 0;
+            foreach (var chartValue in ser.Values.OfType<double>())
+            {
+                tot += (int)chartValue;
+            }
+            return tot;
         }
 
         private void UpdateFileCountCurve()
         {
             var sc = new SeriesCollection();
             var minDate = MinDate().Date;
-            foreach (var trackedFilesValue in _trackedFiles)
+            foreach (var trackedFilesValue in FileToChart)
             {
-                var ser = trackedFilesValue.Value.ToSeries(minDate);
-                ser.Title = trackedFilesValue.Key;
+                var ser = trackedFilesValue.ToSeries(minDate);
+                var bareName = TrackedFile.BareName(trackedFilesValue.File, GetFolder());
+                ser.Title = bareName;
                 sc.Add(ser);
             }
             FileCountCurve.SeriesCollection = sc;
@@ -157,6 +190,7 @@ namespace AcademicSupport
 
         private void LoadTrackedFiles()
         {
+            _ignoredFiles = new List<string>();
             _trackedFiles = new Dictionary<string, TrackedFile>();
             var log = LogFile;
             if (log == null)
@@ -170,7 +204,15 @@ namespace AcademicSupport
                 {
                     string bName;
                     TrackedFileStat stat;
-                    if (TrackedFile.ReadLog(line, out bName, out stat))
+                    if (line.StartsWith("#ignore"))
+                    {
+                        var file = line.Substring(7).Trim();
+                        if (!string.IsNullOrWhiteSpace(file))
+                        {
+                            _ignoredFiles.Add(file);
+                        }
+                    }
+                    else if (TrackedFile.ReadLog(line, out bName, out stat))
                     {
                         if (!_trackedFiles.ContainsKey(bName))
                         {
