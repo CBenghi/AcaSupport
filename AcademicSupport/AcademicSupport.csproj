@@ -69,6 +69,7 @@
     <Compile Include="IrregularIntervals.xaml.cs">
       <DependentUpon>IrregularIntervals.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PandocStarter.cs" />
     <Compile Include="Stacked.xaml.cs">
       <DependentUpon>Stacked.xaml</DependentUpon>
     </Compile>

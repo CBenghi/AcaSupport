@@ -18,6 +18,14 @@
             <TabItem Header="Daily count bars">
                 <local:StackedColumn x:Name="DailyCountBars" />
             </TabItem>
+            <TabItem Header="Pandoc">
+                <Grid>
+                    <Button x:Name="button1" Content="Refresh" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
+                    <ListBox x:Name="listBox" Margin="10,37,10,10"/>
+
+                </Grid>
+            </TabItem>
+            
         </TabControl>
     </Grid>
 </Window>
