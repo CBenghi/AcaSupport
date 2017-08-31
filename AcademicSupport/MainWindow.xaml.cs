@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using AcademicSupport.Properties;
 using LiveCharts;
@@ -14,7 +15,7 @@ namespace AcademicSupport
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<string> _ignoredFiles = new List<string>();
+        private List<Regex> _ignoredFiles = new List<Regex>();
 
         public MainWindow()
         {
@@ -40,8 +41,35 @@ namespace AcademicSupport
         private void UpdateDisplay()
         {
             LoadTrackedFiles();
+            UpdateMarkdownList();
             UpdateFileCountCurve();
             UpdateDailyCountBars();
+        }
+
+        private IEnumerable<FileInfo> MarkdownFiles
+        {
+            get
+            {
+                var fld = GetFolder();
+                if (!fld.Exists)
+                    yield break;
+                foreach (var file in fld.GetFiles("*.md", SearchOption.AllDirectories))
+                {
+                    yield return file;
+                }
+            }
+        }
+
+        private void UpdateMarkdownList()
+        {
+            var bareNames = new List<string>();
+            var fld = GetFolder();
+            foreach (var markdownFile in MarkdownFiles)
+            {
+                var bare = TrackedFile.BareName(markdownFile, fld);
+                bareNames.Add(bare);
+            }
+            MarkDownList.ItemsSource = bareNames;
         }
 
         private IEnumerable<TrackedFile> FileToChart
@@ -50,11 +78,21 @@ namespace AcademicSupport
             {
                 foreach (var trackedFile in _trackedFiles)
                 {
-                    if (_ignoredFiles.Contains(trackedFile.Key))
+                    if (IsIgnoredFile(trackedFile.Key))
                         continue;
                     yield return trackedFile.Value;
                 }
             }
+        }
+
+        private bool IsIgnoredFile(string trackedFileKey)
+        {
+            foreach (var ignoredFile in _ignoredFiles)
+            {
+                if (ignoredFile.IsMatch(trackedFileKey))
+                    return true;
+            }
+            return false;
         }
 
         private void UpdateDailyCountBars()
@@ -140,6 +178,7 @@ namespace AcademicSupport
         }
 
         Dictionary<string, TrackedFile> _trackedFiles;
+        Dictionary<string, string> _mappedFiles;
 
         private string _logfileName = ".system\\ChangeLog.txt";
 
@@ -172,7 +211,7 @@ namespace AcademicSupport
 
             using (var logF = log.AppendText())
             {
-                foreach (var file in fld.GetFiles("*.md"))
+                foreach (var file in MarkdownFiles)
                 {
                     var bareName = TrackedFile.BareName(file, fld);
                     TrackedFile f;
@@ -190,8 +229,12 @@ namespace AcademicSupport
 
         private void LoadTrackedFiles()
         {
-            _ignoredFiles = new List<string>();
+
+            var mapRe = new Regex(@"#map\s+(?<from>.+)\s+=>\s+(?<to>.+)\s*");
+
+            _ignoredFiles = new List<Regex>();
             _trackedFiles = new Dictionary<string, TrackedFile>();
+            _mappedFiles = new Dictionary<string, string>();
             var log = LogFile;
             if (log == null)
                 return;
@@ -206,14 +249,24 @@ namespace AcademicSupport
                     TrackedFileStat stat;
                     if (line.StartsWith("#ignore"))
                     {
-                        var file = line.Substring(7).Trim();
-                        if (!string.IsNullOrWhiteSpace(file))
+                        var pattern = line.Substring(7).Trim();
+                        if (!string.IsNullOrWhiteSpace(pattern))
                         {
-                            _ignoredFiles.Add(file);
+                            _ignoredFiles.Add(new Regex(pattern));
                         }
+                    }
+                    else if (line.StartsWith("#map"))
+                    {
+                        
+                        var m = mapRe.Match(line);
+                        _mappedFiles.Add(
+                            m.Groups["from"].Value,
+                            m.Groups["to"].Value
+                            );
                     }
                     else if (TrackedFile.ReadLog(line, out bName, out stat))
                     {
+                        bName = GetMap(bName);
                         if (!_trackedFiles.ContainsKey(bName))
                         {
                             _trackedFiles.Add(bName, new TrackedFile(GetFolder(), bName));
@@ -222,6 +275,14 @@ namespace AcademicSupport
                     }
                 }
             }
+            MarkDownList.ItemsSource = TrackedFileNames;
+        }
+
+        private string GetMap(string bName)
+        {
+            return _mappedFiles.ContainsKey(bName) 
+                ? _mappedFiles[bName] 
+                : bName;
         }
 
         DirectoryInfo GetFolder()
@@ -250,9 +311,42 @@ namespace AcademicSupport
             DailyCountBars.SeriesCollection = SeriesCollection;
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
+        public IEnumerable<string> TrackedFileNames => _trackedFiles.Keys;
 
+        private DirectoryInfo SysFolder
+        {
+            get
+            {
+                var f = GetFolder();
+                if (f == null)
+                    return null;
+                var pth = Path.Combine(GetFolder().FullName, ".system");
+                return  new DirectoryInfo(pth);
+            }
+        }
+
+        private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var fName = MarkDownList.SelectedItem.ToString();
+            var f = new FileInfo(
+                Path.Combine(
+                    GetFolder().FullName,
+                    fName
+                ));
+            
+            var s = new PandocStarter(SysFolder);
+            var conversion = s.Convert(f);
+            var ret = MessageBoxResult.Yes;
+            if (!string.IsNullOrWhiteSpace(conversion.Report))
+            {
+                ret = MessageBox.Show(this,
+                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?", "Error",
+                    MessageBoxButton.YesNo);
+            }
+            if (ret == MessageBoxResult.Yes)
+            {
+                System.Diagnostics.Process.Start(conversion.ConvertedFile.FullName);
+            }
         }
     }
 }

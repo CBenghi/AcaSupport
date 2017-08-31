@@ -10,47 +10,68 @@ namespace AcademicSupport
 {
     class PandocStarter
     {
-        public string outFolder;
+        private DirectoryInfo _sysFolder;
 
-        public FileInfo sysFolder;
+        internal PandocStarter(DirectoryInfo sysFolder)
+        {
+            _sysFolder = sysFolder;
+        }
 
         public string citationStyle = "elsevier-harvard.csl";
 
         private string bibLibrary = "biblatex.bib";
 
-        private string CSL => Path.Combine(sysFolder.FullName, citationStyle);
-        private string BIB => Path.Combine(sysFolder.FullName, bibLibrary);
+        private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
+        private string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
 
-        public FileInfo Convert(FileInfo sourcefile)
+        public PandocConversionResult Convert(FileInfo sourcefile)
         {
+            // prepare pngs
+            var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
+            Svg.ConvertVectorGraphics(d);
+
             var dst = new FileInfo(
                 Path.Combine(
-                    Path.Combine(sysFolder.FullName, "pandoc-out"),
+                    Path.Combine(_sysFolder.FullName, "pandoc-out"),
                     sourcefile.Name + ".docx"));
-
-
+            
             const string command = @"pandoc.exe";
             var args = $"\"{sourcefile.FullName}\" --filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\" -f markdown -t docx -s -o \"{dst.FullName}\"";
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+           
 
-            // instantiate and launch process
+            // instantiate process
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = command,
                     Arguments = args,
-                    WorkingDirectory = sourcefile.DirectoryName
+                    WorkingDirectory = sourcefile.DirectoryName,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 }
             };
+
+            // launch and start stopwatch
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
             process.Start();
             process.WaitForExit();
 
-            // once stopped 
+            var retT = process.StandardError.ReadToEnd();
+
+            // once finished
             stopWatch.Stop();
-            return dst;
+            var res = new PandocConversionResult
+            {
+                ConvertedFile = dst,
+                Milliseconds = stopWatch.ElapsedMilliseconds,
+                Report = Uri.UnescapeDataString(retT), 
+                ExitCode = process.ExitCode
+            };
+            return res;
         }
     }
 }
