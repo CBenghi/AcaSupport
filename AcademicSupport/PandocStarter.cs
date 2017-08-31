@@ -34,12 +34,17 @@ namespace AcademicSupport
                 Path.Combine(
                     Path.Combine(_sysFolder.FullName, "pandoc-out"),
                     sourcefile.Name + ".docx"));
-            
+
+            var lockingProcesses = FileUtil.WhoIsLocking(dst.FullName);
+            foreach (var lockingProcess in lockingProcesses)
+            {
+                lockingProcess.CloseMainWindow();
+                lockingProcess.WaitForExit(); // todo, this will have to change to a fixed amount of time
+            }
+
             const string command = @"pandoc.exe";
             var args = $"\"{sourcefile.FullName}\" --filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\" -f markdown -t docx -s -o \"{dst.FullName}\"";
-
-           
-
+            
             // instantiate process
             var process = new Process
             {

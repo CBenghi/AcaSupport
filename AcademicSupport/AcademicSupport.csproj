@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{30091FDE-F9FE-40E7-BE9B-90079DFCF406}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AcademicSupport</RootNamespace>
     <AssemblyName>AcademicSupport</AssemblyName>
@@ -77,6 +77,7 @@
     <Compile Include="Svg.cs" />
     <Compile Include="TrackedFile.charting.cs" />
     <Compile Include="TrackedFile.cs" />
+    <Compile Include="Util.cs" />
     <Page Include="IrregularIntervals.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

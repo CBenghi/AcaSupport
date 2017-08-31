@@ -13,6 +13,8 @@ namespace AcademicSupport
         internal static void ConvertVectorGraphics(DirectoryInfo d)
         {
             Console.WriteLine($"Converting SVG images in {d.FullName}");
+            if (!d.Exists)
+                return;
 
             var svgs = d.GetFiles("*.svg", SearchOption.AllDirectories);
             foreach (var svg in svgs)
