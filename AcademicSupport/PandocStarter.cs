@@ -42,6 +42,8 @@ namespace AcademicSupport
                 lockingProcess.WaitForExit(); // todo, this will have to change to a fixed amount of time
             }
 
+            // todo: --number-sections can be added when working with html (it's ignored in docx anyway)
+            //
             const string command = @"pandoc.exe";
             var args = $"\"{sourcefile.FullName}\" --filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\" -f markdown -t docx -s -o \"{dst.FullName}\"";
             
