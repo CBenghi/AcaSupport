@@ -22,7 +22,7 @@ namespace AcademicSupport
         private string bibLibrary = "biblatex.bib";
 
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
-        private string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
+        internal string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
 
         public PandocConversionResult Convert(FileInfo sourcefile)
         {
