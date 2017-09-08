@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AcademicSupport"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Icon="Icon.ico"
+        Title="Academic support" Height="350" Width="525">
     <Grid>
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
