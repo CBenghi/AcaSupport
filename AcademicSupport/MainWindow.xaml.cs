@@ -27,7 +27,10 @@ namespace AcademicSupport
                 var d = new DirectoryInfo(".");
                 TxtFolder.Text = d.FullName;
             }
-            if (!TxtFolder.Text.EndsWith(".system"))
+            var dir = new DirectoryInfo(TxtFolder.Text);
+            if (!dir.Exists)
+                return;
+            if (dir.GetDirectories(".system").FirstOrDefault() != null)
                 UpdateDisplay();
         }
 
