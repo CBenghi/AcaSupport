@@ -341,12 +341,16 @@ namespace AcademicSupport
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {
                 ret = MessageBox.Show(this,
-                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?", "Error",
-                    MessageBoxButton.YesNo);
+                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
+                    MessageBoxButton.YesNoCancel);
             }
             if (ret == MessageBoxResult.Yes)
             {
                 System.Diagnostics.Process.Start(conversion.ConvertedFile.FullName);
+            }
+            else if (ret == MessageBoxResult.No)
+            {
+                Clipboard.SetText(conversion.Report);
             }
         }
     }
