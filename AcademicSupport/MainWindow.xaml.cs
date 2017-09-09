@@ -27,7 +27,10 @@ namespace AcademicSupport
                 var d = new DirectoryInfo(".");
                 TxtFolder.Text = d.FullName;
             }
-            if (!TxtFolder.Text.EndsWith(".system"))
+            var dir = new DirectoryInfo(TxtFolder.Text);
+            if (!dir.Exists)
+                return;
+            if (dir.GetDirectories(".system").FirstOrDefault() != null)
                 UpdateDisplay();
         }
 
@@ -328,13 +331,8 @@ namespace AcademicSupport
 
         private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var fName = MarkDownList.SelectedItem.ToString();
-            var f = new FileInfo(
-                Path.Combine(
-                    GetFolder().FullName,
-                    fName
-                ));
-            
+            var f = SelectedMarkDown;
+
             var s = new PandocStarter(SysFolder);
             var conversion = s.Convert(f);
             var ret = MessageBoxResult.Yes;
@@ -351,6 +349,87 @@ namespace AcademicSupport
             else if (ret == MessageBoxResult.No)
             {
                 Clipboard.SetText(conversion.Report);
+            }
+        }
+
+        private FileInfo SelectedMarkDown
+        {
+            get
+            {
+                var fName = MarkDownList.SelectedItem.ToString();
+                var f = new FileInfo(
+                    Path.Combine(
+                        GetFolder().FullName,
+                        fName
+                    ));
+                return f;
+            }
+        }
+
+        private void BibExtract_Click(object sender, RoutedEventArgs e)
+        {
+            var s = new PandocStarter(SysFolder);
+            var fullBib = new FileInfo(s.BIB);
+
+            var mdSource = SelectedMarkDown;
+            var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
+            var mdBib = new FileInfo(mdBibName);
+
+
+
+            var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled);
+            var reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
+
+            var avails = new Dictionary<string, string>();
+            using (var mdSourceS = fullBib.OpenText())
+            {
+                string key = "";
+                string val = "";
+                string line;
+                while ((line = mdSourceS.ReadLine()) != null)
+                {
+                    
+                    var testNewBib = reNewBib.Match(line);
+                    if (testNewBib.Success)
+                    {
+                        key = "@" + testNewBib.Groups[1].Value;
+                        val = line + "\r\n";
+                    }
+                    else if (line == "}")
+                    {
+                        val += line + "\r\n";
+                        if (key != "")
+                        {
+                            avails.Add(key, val);
+                        }
+                        key = "";
+                        val = "";
+                    }
+                    else
+                    {
+                        val += line + "\r\n";
+                    }
+                }
+            }
+
+            var doneMatches = new List<string>();
+            using (var mdSourceS = mdSource.OpenText())
+            using (var mdBibS = mdBib.CreateText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                foreach (Match match in reRefKey.Matches(markDown))
+                {
+                    var key = match.Value;
+                    if (doneMatches.Contains(key))
+                        continue;
+
+                    string bib;
+                    var found = avails.TryGetValue(key, out bib);
+                    if (!found)
+                        continue;
+                    mdBibS.WriteLine(bib);
+                    doneMatches.Add(key);
+                }
             }
         }
     }
