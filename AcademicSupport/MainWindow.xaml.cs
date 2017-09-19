@@ -31,7 +31,27 @@ namespace AcademicSupport
             if (!dir.Exists)
                 return;
             if (dir.GetDirectories(".system").FirstOrDefault() != null)
+            {
                 UpdateDisplay();
+                UpdateSystem();
+            }
+        }
+
+        private void UpdateSystem()
+        {
+            var fld = GetFolder();
+            var sysfolder = fld.GetDirectories(".system").FirstOrDefault();
+            UpdateCitationStyles(sysfolder);
+        }
+
+        private void UpdateCitationStyles(DirectoryInfo sysfolder)
+        {
+            CitationStyle.Items.Clear();
+            var styles = sysfolder.GetFiles("*.csl");
+            foreach (var fileInfo in styles)
+            {
+                CitationStyle.Items.Add(fileInfo.Name);
+            }
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -334,6 +354,10 @@ namespace AcademicSupport
             var f = SelectedMarkDown;
 
             var s = new PandocStarter(SysFolder);
+            if (!string.IsNullOrEmpty(CitationStyle.Text))
+            {
+                s.citationStyle = CitationStyle.Text;
+            }
             var conversion = s.Convert(f);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
