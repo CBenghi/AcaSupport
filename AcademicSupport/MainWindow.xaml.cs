@@ -8,6 +8,7 @@ using System.Windows;
 using AcademicSupport.Properties;
 using LiveCharts;
 using LiveCharts.Wpf;
+using Microsoft.Win32;
 
 namespace AcademicSupport
 {
@@ -349,6 +350,8 @@ namespace AcademicSupport
             }
         }
 
+
+
         private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var f = SelectedMarkDown;
@@ -368,7 +371,7 @@ namespace AcademicSupport
             }
             if (ret == MessageBoxResult.Yes)
             {
-                System.Diagnostics.Process.Start(conversion.ConvertedFile.FullName);
+                Process.Start(conversion.ConvertedFile.FullName);
             }
             else if (ret == MessageBoxResult.No)
             {
@@ -455,6 +458,46 @@ namespace AcademicSupport
                     doneMatches.Add(key);
                 }
             }
+        }
+
+        private void Other_File(object sender, RoutedEventArgs e)
+        {
+            var d = new OpenFileDialog
+            {
+                Multiselect = false,
+                DefaultExt = ".md",
+            };
+            d.ShowDialog(this);
+            if (string.IsNullOrWhiteSpace(d.FileName))
+                return;
+            var fn = d.FileName;
+            
+            var f = new FileInfo(fn);
+
+            var s = new PandocStarter(SysFolder);
+            if (!string.IsNullOrEmpty(CitationStyle.Text))
+            {
+                s.citationStyle = CitationStyle.Text;
+            }
+            var conversion = s.Convert(f);
+            var ret = MessageBoxResult.Yes;
+            if (!string.IsNullOrWhiteSpace(conversion.Report))
+            {
+                ret = MessageBox.Show(this,
+                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
+                    MessageBoxButton.YesNoCancel);
+            }
+            if (ret == MessageBoxResult.Yes)
+            {
+                Process.Start(conversion.ConvertedFile.FullName);
+            }
+            else if (ret == MessageBoxResult.No)
+            {
+                Clipboard.SetText(conversion.Report);
+            }
+
+
+
         }
     }
 }

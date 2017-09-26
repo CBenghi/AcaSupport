@@ -21,10 +21,11 @@
             </TabItem>
             <TabItem Header="Pandoc">
                 <Grid>
-                    <ListBox x:Name="MarkDownList" Margin="10,10,10.286,35.429" MouseDoubleClick="PandocLaunch" />
+                    <ListBox x:Name="MarkDownList" Margin="10,43,10,39" MouseDoubleClick="PandocLaunch" />
                     <Button x:Name="BibExtract" Content="Extract bib" Margin="0,0,10.286,10.429" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="BibExtract_Click" />
                     <Label Content="Style:" Height="30" Margin="10,0,0,4" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="46"/>
                     <ComboBox x:Name="CitationStyle" Margin="69,0,0,10.429" Height="21" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="144"/>
+                    <Button x:Name="Other" Content="Other" Margin="0,10,10,0" HorizontalAlignment="Right" Width="148" Click="Other_File" Height="20" VerticalAlignment="Top" />
                 </Grid>
             </TabItem>
 
