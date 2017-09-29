@@ -499,5 +499,32 @@ namespace AcademicSupport
 
 
         }
+
+        private void EmphasisExtract_Click(object sender, RoutedEventArgs e)
+        {
+            var reRefKey = new Regex(@"\*\w+( \w+){0,3}\*");
+
+            var mdSource = SelectedMarkDown;
+            var doneMatches = new List<string>();
+            using (var mdSourceS = mdSource.OpenText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                foreach (Match match in reRefKey.Matches(markDown))
+                {
+                    var key = match.Value;
+                    if (doneMatches.Contains(key))
+                        continue;
+                    doneMatches.Add(key);
+                }
+            }
+            if (!doneMatches.Any())
+            {
+                MessageBox.Show("No matches found.");
+            }
+            doneMatches.Sort();
+            var allmatches = string.Join("\r\n", doneMatches.ToArray());
+            Clipboard.SetText(allmatches);
+            MessageBox.Show($"{doneMatches.Count} matches copied to clipboard.");
+        }
     }
 }
