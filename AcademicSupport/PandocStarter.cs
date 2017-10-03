@@ -23,6 +23,7 @@ namespace AcademicSupport
 
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
         internal string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
+        public bool PlaceTable { get; set; }
 
         public PandocConversionResult Convert(FileInfo sourcefile)
         {
@@ -42,11 +43,23 @@ namespace AcademicSupport
                 lockingProcess.WaitForExit(); // todo, this will have to change to a fixed amount of time
             }
 
+            var FilterList = new List<string>();
+
+            if (PlaceTable)
+                FilterList.Add("--filter pandoc-placetable");
+
+            FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
+
+            var Filters = string.Join(" ", FilterList.ToArray());
+
             // todo: --number-sections can be added when working with html (it's ignored in docx anyway)
             //
             const string command = @"pandoc.exe";
-            var args = $"\"{sourcefile.FullName}\" --filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\" -f markdown -t docx -s -o \"{dst.FullName}\"";
-            
+            // var args = $"\"{sourcefile.FullName}\" {Filters} -f markdown -t docx -s -o \"{dst.FullName}\"";
+            var args = $"\"{sourcefile.FullName}\" {Filters} -s -o \"{dst.FullName}\"";
+
+            var cmdline = command + " " + args;
+
             // instantiate process
             var process = new Process
             {

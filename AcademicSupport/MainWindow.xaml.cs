@@ -361,6 +361,7 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
+            s.PlaceTable = FilterPlacetable.IsChecked.HasValue && FilterPlacetable.IsChecked.Value;
             var conversion = s.Convert(f);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))

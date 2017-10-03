@@ -19,14 +19,20 @@
             <TabItem Header="Daily count bars">
                 <local:StackedColumn x:Name="DailyCountBars" />
             </TabItem>
+
+            <TabItem Header="Files">
+                <Grid>
+                    <ListBox x:Name="MarkDownList" Margin="10,10,10,39" MouseDoubleClick="PandocLaunch" />
+                    <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="BibExtract_Click" />
+                    <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
+                </Grid>
+            </TabItem>
             <TabItem Header="Pandoc">
                 <Grid>
-                    <ListBox x:Name="MarkDownList" Margin="10,43,10,39" MouseDoubleClick="PandocLaunch" />
-                    <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="BibExtract_Click" />
                     <Label Content="Style:" Margin="10,8,0,0" HorizontalAlignment="Left" Width="46" Height="30" VerticalAlignment="Top"/>
                     <ComboBox x:Name="CitationStyle" Margin="61,10,0,0" HorizontalAlignment="Left" Width="144" Height="21" VerticalAlignment="Top"/>
-                    <Button x:Name="Other" Content="Other" Margin="0,11,10,0" HorizontalAlignment="Right" Width="148" Click="Other_File" Height="20" VerticalAlignment="Top" />
-                    <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
+                    <Button x:Name="Other" Content="Select markdown" Margin="0,11,10,0" HorizontalAlignment="Right" Width="148" Click="Other_File" Height="20" VerticalAlignment="Top" />
+                    <CheckBox IsChecked="True" x:Name="FilterPlacetable" Content="PlaceTable" Margin="61,42" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 </Grid>
             </TabItem>
 
