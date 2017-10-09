@@ -396,51 +396,19 @@ namespace AcademicSupport
 
         private void BibExtract_Click(object sender, RoutedEventArgs e)
         {
+            // get available bib keys
+            //
             var s = new PandocStarter(SysFolder);
             var fullBib = new FileInfo(s.BIB);
-
+            var avails = BibliographyManagement.BibliographyAsDictionary(fullBib);
+            
+            // produce new file
+            //
             var mdSource = SelectedMarkDown;
             var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
             var mdBib = new FileInfo(mdBibName);
-
-
-
-            var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled);
-            var reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
-
-            var avails = new Dictionary<string, string>();
-            using (var mdSourceS = fullBib.OpenText())
-            {
-                string key = "";
-                string val = "";
-                string line;
-                while ((line = mdSourceS.ReadLine()) != null)
-                {
-                    
-                    var testNewBib = reNewBib.Match(line);
-                    if (testNewBib.Success)
-                    {
-                        key = "@" + testNewBib.Groups[1].Value;
-                        val = line + "\r\n";
-                    }
-                    else if (line == "}")
-                    {
-                        val += line + "\r\n";
-                        if (key != "")
-                        {
-                            avails.Add(key, val);
-                        }
-                        key = "";
-                        val = "";
-                    }
-                    else
-                    {
-                        val += line + "\r\n";
-                    }
-                }
-            }
-
             var doneMatches = new List<string>();
+            var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled); // refkey in markdown 
             using (var mdSourceS = mdSource.OpenText())
             using (var mdBibS = mdBib.CreateText())
             {
@@ -450,7 +418,6 @@ namespace AcademicSupport
                     var key = match.Value;
                     if (doneMatches.Contains(key))
                         continue;
-
                     string bib;
                     var found = avails.TryGetValue(key, out bib);
                     if (!found)
@@ -496,9 +463,6 @@ namespace AcademicSupport
             {
                 Clipboard.SetText(conversion.Report);
             }
-
-
-
         }
 
         private void EmphasisExtract_Click(object sender, RoutedEventArgs e)
@@ -526,6 +490,67 @@ namespace AcademicSupport
             var allmatches = string.Join("\r\n", doneMatches.ToArray());
             Clipboard.SetText(allmatches);
             MessageBox.Show($"{doneMatches.Count} matches copied to clipboard.");
+        }
+
+        private void BibExtractTwo_Click(object sender, RoutedEventArgs e)
+        {
+            // get available bib keys
+            //
+            var fullBib4 = new FileInfo(@"E:\Dev\PaperRepository\zot4.bib");
+            var fullBib5 = new FileInfo(@"E:\Dev\PaperRepository\zot5.bib");
+            var avails4 = BibliographyManagement.BibliographyAsDictionary(fullBib4);
+            var avails5 = BibliographyManagement.BibliographyAsDictionary(fullBib5);
+
+            if (avails4.Count != avails5.Count)
+            {
+                return;
+            }
+
+            var keys4 = avails4.Keys.ToArray();
+            var keys5 = avails5.Keys.ToArray();
+
+            var titRe = new Regex(@"title = *([^\n])*");
+
+            
+            
+                var replaceIds = new Dictionary<string, string>();
+            for (int i = 0; i < avails4.Count; i++)
+            {
+
+                var cont4 = avails4[keys4[i]];
+                var cont5 = avails5[keys5[i]];
+                var title4 = titRe.Match(cont4);
+                var title5 = titRe.Match(cont5);
+
+                if (title4.Groups[1].Value == title5.Groups[1].Value)
+                {
+                    // same title
+                    if (keys4[i] != keys5[i])
+                    {
+                        replaceIds.Add(keys4[i], keys5[i]);
+                    }
+                }
+            }
+            
+
+            // produce new file
+            //
+            var mdSource = SelectedMarkDown;
+            var mdBibName = Path.ChangeExtension(mdSource.FullName, ".2.md");
+            var mdBib = new FileInfo(mdBibName);
+            
+            using (var mdSourceS = mdSource.OpenText())
+            using (var mdBibS = mdBib.CreateText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                var mdCopy = markDown;
+
+                foreach (var item in replaceIds)
+                {
+                    mdCopy = mdCopy.Replace(item.Key, item.Value);
+                }
+                mdBibS.Write(mdCopy);
+            }
         }
     }
 }

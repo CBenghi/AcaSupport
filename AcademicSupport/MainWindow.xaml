@@ -9,33 +9,41 @@
         Title="Academic support" Height="350" Width="525">
     <Grid>
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-        <Button x:Name="button" Content="Update word count" Margin="0,0,10,10" HorizontalAlignment="Right" Width="148" Height="20" VerticalAlignment="Bottom" Click="button_Click"/>
+        <TextBox Background="LightSkyBlue" x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <Button x:Name="button" Content="Update list and word-count" Margin="17,0,0,10" Height="25" VerticalAlignment="Bottom" Click="button_Click" HorizontalAlignment="Left" Width="200"/>
 
-        <TabControl x:Name="tabControl" Margin="17,42,10,35">
+        <TabControl x:Name="tabControl" Margin="17,51,10,40">
+            <TabItem Header="Files">
+                <Grid>
+                    <ListBox Background="LightYellow" x:Name="MarkDownList" Margin="10,10,10,39" MouseDoubleClick="PandocLaunch" />
+                    <Button x:Name="BibExtract2" IsEnabled="False" Content="Fix zot4 bib" Margin="0,0,10,10" Height="24" VerticalAlignment="Bottom" Click="BibExtractTwo_Click" RenderTransformOrigin="-1.744,0.613" HorizontalAlignment="Right" Width="85" />
+                    <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="BibExtract_Click" />
+                    <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
+                </Grid>
+            </TabItem>
             <TabItem Header="File count curve">
                 <local:IrregularIntervals x:Name="FileCountCurve" Margin="5" />
             </TabItem>
             <TabItem Header="Daily count bars">
                 <local:StackedColumn x:Name="DailyCountBars" />
             </TabItem>
-
-            <TabItem Header="Files">
-                <Grid>
-                    <ListBox x:Name="MarkDownList" Margin="10,10,10,39" MouseDoubleClick="PandocLaunch" />
-                    <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="BibExtract_Click" />
-                    <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="20" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
-                </Grid>
-            </TabItem>
             <TabItem Header="Pandoc">
                 <Grid>
-                    <Label Content="Style:" Margin="10,8,0,0" HorizontalAlignment="Left" Width="46" Height="30" VerticalAlignment="Top"/>
-                    <ComboBox x:Name="CitationStyle" Margin="61,10,0,0" HorizontalAlignment="Left" Width="144" Height="21" VerticalAlignment="Top"/>
-                    <Button x:Name="Other" Content="Select markdown" Margin="0,11,10,0" HorizontalAlignment="Right" Width="148" Click="Other_File" Height="20" VerticalAlignment="Top" />
-                    <CheckBox IsChecked="True" x:Name="FilterPlacetable" Content="PlaceTable" Margin="61,42" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <GroupBox Header="Settings" Margin="10,10,177,104">
+                        <Grid>
+                            <Label Content="Style:" Margin="7,8,0,0" HorizontalAlignment="Left" Width="46" Height="30" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="CitationStyle" Margin="58,10,0,0" HorizontalAlignment="Left" Width="144" Height="21" VerticalAlignment="Top"/>
+                            <CheckBox IsChecked="True" x:Name="FilterPlacetable" Content="PlaceTable" Margin="58,42,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Launch" Height="86" Margin="10,107,177,13">
+                        <Grid>
+                            <Button x:Name="Other" Content="Convert any file" Margin="10,17,10,0" Click="Other_File" Height="28" VerticalAlignment="Top" />
+                        </Grid>
+                    </GroupBox>
+
                 </Grid>
             </TabItem>
-
 
         </TabControl>
 
