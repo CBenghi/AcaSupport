@@ -45,11 +45,8 @@
                             <Button x:Name="Other" Content="Convert any file" Margin="10,17,10,0" Click="Other_File" Height="28" VerticalAlignment="Top" />
                         </Grid>
                     </GroupBox>
-
                 </Grid>
             </TabItem>
-
         </TabControl>
-
     </Grid>
 </Window>
