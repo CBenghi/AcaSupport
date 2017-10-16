@@ -9,6 +9,7 @@ using AcademicSupport.Properties;
 using LiveCharts;
 using LiveCharts.Wpf;
 using Microsoft.Win32;
+using System.Text;
 
 namespace AcademicSupport
 {
@@ -551,6 +552,87 @@ namespace AcademicSupport
                 }
                 mdBibS.Write(mdCopy);
             }
+        }
+
+        internal class AcronymDesc
+        {
+            public int FirstBracketed;
+            public int FirstUse;
+            public List<int> AllEntries;
+            public List<int> AllBracketed;
+            public bool Ignore = false;
+
+            internal AcronymDesc(string tla, string doc)
+            {
+                var bracketedMatch = new Regex(@"\([\s\*_]*" + tla + @"[\s\*_]*\)");
+                AllBracketed= bracketedMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
+                FirstBracketed = AllBracketed.FirstOrDefault();
+
+                var acronymMatch = new Regex(@"\b" + tla + @"\b");
+                AllEntries = acronymMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
+
+                if (FirstBracketed != 0)
+                {
+                    var prec = doc.Substring(FirstBracketed-1, 1);
+                    if (prec == "!")
+                        Ignore = true;
+                }
+               
+                FirstUse = AllEntries.FirstOrDefault();
+            }
+
+            public string ToS()
+            {
+                // return "First bracketed: " +  FirstBracketedMatch + " - All: " + string.Join(", ", AllEntries.ToArray());
+                if (FirstBracketed == 0)
+                    return $"\t<undefined>\t(1st: {FirstUse})";
+                if (FirstBracketed <= FirstUse)
+                {
+                    if (AllBracketed.Count > 1)
+                        return $"<ok>\t({AllBracketed.Count} bracketed entries)";
+                    return $"\t<ok>\t(1st: {FirstBracketed})";
+                }
+                return "\t<early>";
+            }
+        }
+
+        private void CheckAcronyms(object sender, RoutedEventArgs e)
+        {
+            // (?<!\@) is a lookbehind that excludes the @ for the cit references
+            var acronymMatch = new Regex(@"\b(?<!\@)([A-Z][A-Z1-9][0-9A-Za-z]*)\b");
+
+            var mdSource = SelectedMarkDown;
+            var doneMatches = new Dictionary<string, AcronymDesc>();
+            using (var mdSourceS = mdSource.OpenText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                foreach (Match match in acronymMatch.Matches(markDown))
+                {
+                    var key = match.Value;
+                    if (doneMatches.ContainsKey(key))
+                        continue;
+                    AcronymDesc d = new AcronymDesc(key, markDown);
+                    doneMatches.Add(key, d);
+                }
+            }
+            if (!doneMatches.Any())
+            {
+                MessageBox.Show("No matches found.");
+            }
+            var sorted = doneMatches.OrderBy(x => x.Key);
+            var sb = new StringBuilder();
+            var cnt = 0;
+            foreach (var item in sorted)
+            {
+                if (item.Value.Ignore)
+                    continue;
+                cnt++;
+                sb.AppendLine(item.Key + " " + item.Value.ToS());
+            }
+            
+            Clipboard.SetText(sb.ToString());
+            MessageBox.Show($"{doneMatches.Count} matches found, {cnt} copied to clipboard, excluding ignores.");
+
         }
     }
 }
