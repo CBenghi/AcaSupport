@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AcademicSupport"
         mc:Ignorable="d"
         Icon="Icon.ico"
-        Title="Academic support" Height="416.667" Width="555.667">
+        Title="Academic support" Height="600" Width="500">
     <Grid>
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox Background="LightSkyBlue" x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>

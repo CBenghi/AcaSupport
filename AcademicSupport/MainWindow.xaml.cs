@@ -556,8 +556,9 @@ namespace AcademicSupport
 
         internal class AcronymDesc
         {
-            public int FirstBracketed;
-            public int FirstUse;
+            public int FirstBracketed => AllBracketed.FirstOrDefault();
+            public int FirstUse => AllEntries.FirstOrDefault();
+
             public List<int> AllEntries;
             public List<int> AllBracketed;
             public bool Ignore = false;
@@ -566,7 +567,7 @@ namespace AcademicSupport
             {
                 var bracketedMatch = new Regex(@"\([\s\*_]*" + tla + @"[\s\*_]*\)");
                 AllBracketed= bracketedMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
-                FirstBracketed = AllBracketed.FirstOrDefault();
+                
 
                 var acronymMatch = new Regex(@"\b" + tla + @"\b");
                 AllEntries = acronymMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
@@ -576,23 +577,46 @@ namespace AcademicSupport
                     var prec = doc.Substring(FirstBracketed-1, 1);
                     if (prec == "!")
                         Ignore = true;
+                }               
+            }
+
+            public string Status
+            {
+                get
+                {
+                    if (FirstBracketed == 0)
+                        return "<undefined>";
+                    if (FirstBracketed <= FirstUse)
+                        return $"<ok>";
+                    return "<early>";
                 }
-               
-                FirstUse = AllEntries.FirstOrDefault();
             }
 
             public string ToS()
             {
                 // return "First bracketed: " +  FirstBracketedMatch + " - All: " + string.Join(", ", AllEntries.ToArray());
-                if (FirstBracketed == 0)
-                    return $"\t<undefined>\t(1st: {FirstUse})";
-                if (FirstBracketed <= FirstUse)
+                return $"{Status}\t{AllEntries.Count}\t{AllBracketed.Count}";               
+            }
+
+            internal static void RemovePluralForms(Dictionary<string, AcronymDesc> acronymDictionary)
+            {
+                Regex endsInSmallS = new Regex("(.*)s$");
+                var plurals = acronymDictionary.Keys.Where(x => endsInSmallS.IsMatch(x)).ToList();
+                foreach (var plural in plurals)
                 {
-                    if (AllBracketed.Count > 1)
-                        return $"<ok>\t({AllBracketed.Count} bracketed entries)";
-                    return $"\t<ok>\t(1st: {FirstBracketed})";
+                    var singular = endsInSmallS.Match(plural).Groups[1].Value;
+                    if (!acronymDictionary.ContainsKey(singular))
+                        continue;
+                    acronymDictionary[singular].Merge(acronymDictionary[plural]);
+                    acronymDictionary.Remove(plural);
                 }
-                return "\t<early>";
+            }
+
+            private void Merge(AcronymDesc otherAcronym)
+            {
+                AllBracketed = AllBracketed.Union(otherAcronym.AllBracketed).ToList();
+                AllEntries = AllEntries.Union(otherAcronym.AllEntries).ToList();
+                Ignore = Ignore || otherAcronym.Ignore;
             }
         }
 
@@ -619,6 +643,10 @@ namespace AcademicSupport
             {
                 MessageBox.Show("No matches found.");
             }
+
+            AcronymDesc.RemovePluralForms(doneMatches);
+
+
             var sorted = doneMatches.OrderBy(x => x.Key);
             var sb = new StringBuilder();
             var cnt = 0;
@@ -627,7 +655,7 @@ namespace AcademicSupport
                 if (item.Value.Ignore)
                     continue;
                 cnt++;
-                sb.AppendLine(item.Key + " " + item.Value.ToS());
+                sb.AppendLine(item.Key + "\t" + item.Value.ToS());
             }
             
             Clipboard.SetText(sb.ToString());
