@@ -69,6 +69,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AcronymDesc.cs" />
     <Compile Include="BibliographyManagement.cs" />
     <Compile Include="IrregularIntervals.xaml.cs">
       <DependentUpon>IrregularIntervals.xaml</DependentUpon>

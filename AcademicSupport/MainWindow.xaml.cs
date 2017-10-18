@@ -554,83 +554,15 @@ namespace AcademicSupport
             }
         }
 
-        internal class AcronymDesc
-        {
-            public int FirstBracketed => AllBracketed.FirstOrDefault();
-            public int FirstUse => AllEntries.FirstOrDefault();
-
-            public List<int> AllEntries;
-            public List<int> AllBracketed;
-            public bool Ignore = false;
-
-            internal AcronymDesc(string tla, string doc)
-            {
-                var bracketedMatch = new Regex(@"\([\s\*_]*" + tla + @"[\s\*_]*\)");
-                AllBracketed= bracketedMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
-                
-
-                var acronymMatch = new Regex(@"\b" + tla + @"\b");
-                AllEntries = acronymMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
-
-                if (FirstBracketed != 0)
-                {
-                    var prec = doc.Substring(FirstBracketed-1, 1);
-                    if (prec == "!")
-                        Ignore = true;
-                }               
-            }
-
-            public string Status
-            {
-                get
-                {
-                    if (FirstBracketed == 0)
-                        return "<undefined>";
-                    if (FirstBracketed <= FirstUse)
-                        return $"<ok>";
-                    return "<early>";
-                }
-            }
-
-            public string ToS()
-            {
-                // return "First bracketed: " +  FirstBracketedMatch + " - All: " + string.Join(", ", AllEntries.ToArray());
-                return $"{Status}\t{AllEntries.Count}\t{AllBracketed.Count}";               
-            }
-
-            internal static void RemovePluralForms(Dictionary<string, AcronymDesc> acronymDictionary)
-            {
-                Regex endsInSmallS = new Regex("(.*)s$");
-                var plurals = acronymDictionary.Keys.Where(x => endsInSmallS.IsMatch(x)).ToList();
-                foreach (var plural in plurals)
-                {
-                    var singular = endsInSmallS.Match(plural).Groups[1].Value;
-                    if (!acronymDictionary.ContainsKey(singular))
-                        continue;
-                    acronymDictionary[singular].Merge(acronymDictionary[plural]);
-                    acronymDictionary.Remove(plural);
-                }
-            }
-
-            private void Merge(AcronymDesc otherAcronym)
-            {
-                AllBracketed = AllBracketed.Union(otherAcronym.AllBracketed).ToList();
-                AllEntries = AllEntries.Union(otherAcronym.AllEntries).ToList();
-                Ignore = Ignore || otherAcronym.Ignore;
-            }
-        }
-
+       
         private void CheckAcronyms(object sender, RoutedEventArgs e)
         {
-            // (?<!\@) is a lookbehind that excludes the @ for the cit references
-            var acronymMatch = new Regex(@"\b(?<!\@)([A-Z][A-Z1-9][0-9A-Za-z]*)\b");
-
             var mdSource = SelectedMarkDown;
             var doneMatches = new Dictionary<string, AcronymDesc>();
             using (var mdSourceS = mdSource.OpenText())
             {
                 var markDown = mdSourceS.ReadToEnd();
-                foreach (Match match in acronymMatch.Matches(markDown))
+                foreach (Match match in AcronymDesc.Find(markDown))
                 {
                     var key = match.Value;
                     if (doneMatches.ContainsKey(key))
