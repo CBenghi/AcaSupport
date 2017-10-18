@@ -37,6 +37,7 @@
                             <GroupBox Header="Filters" Margin="10,43,0,0" HorizontalAlignment="Left" Width="261" Height="68" VerticalAlignment="Top">
                                 <Grid>
                                     <CheckBox IsChecked="True" x:Name="FilterPlacetable" Content="PlaceTable" Margin="45,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                    <CheckBox IsChecked="False" x:Name="FilterNumbering" Content="PlaceNumbering" Margin="45,30,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
                                 </Grid>
                             </GroupBox>
                         </Grid>

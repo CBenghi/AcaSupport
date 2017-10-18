@@ -24,6 +24,7 @@ namespace AcademicSupport
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
         internal string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
         public bool PlaceTable { get; set; }
+        public bool Numbering { get; set; } = true;
 
         public PandocConversionResult Convert(FileInfo sourcefile)
         {
@@ -47,6 +48,9 @@ namespace AcademicSupport
 
             if (PlaceTable)
                 FilterList.Add("--filter pandoc-placetable");
+
+            if (Numbering)
+                FilterList.Add("--filter pandoc-numbering");
 
             FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
 
