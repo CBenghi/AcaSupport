@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
-    class PandocConversionResult
+    public class PandocConversionResult
     {
         public FileInfo ConvertedFile;
         public int ExitCode;

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
-    internal class Svg
+    public class Svg
     {
-        internal static void ConvertVectorGraphics(DirectoryInfo d)
+        public static void ConvertVectorGraphics(DirectoryInfo d)
         {
             Console.WriteLine($"Converting SVG images in {d.FullName}");
             if (!d.Exists)
@@ -55,6 +55,5 @@ namespace AcademicSupport
                 // Console.WriteLine($"{stopWatch.Elapsed.Milliseconds} ms.");
             }
         }
-
     }
 }

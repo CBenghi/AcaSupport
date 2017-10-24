@@ -351,7 +351,7 @@ namespace AcademicSupport
             }
         }
 
-
+        WindowsFileUlocker _fileUnlocker = new WindowsFileUlocker();
 
         private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -363,8 +363,8 @@ namespace AcademicSupport
                 s.citationStyle = CitationStyle.Text;
             }
             s.PlaceTable = FilterPlacetable.IsChecked.HasValue && FilterPlacetable.IsChecked.Value;
-            s.Numbering = FilterPlacetable.IsChecked.HasValue && FilterPlacetable.IsChecked.Value;
-            var conversion = s.Convert(f);
+            s.Numbering = FilterNumbering.IsChecked.HasValue && FilterNumbering.IsChecked.Value;
+            var conversion = s.Convert(f, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {
@@ -449,7 +449,7 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
-            var conversion = s.Convert(f);
+            var conversion = s.Convert(f, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {

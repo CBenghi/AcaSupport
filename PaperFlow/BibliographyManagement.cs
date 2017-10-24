@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
-    internal class BibliographyManagement
+    public class BibliographyManagement
     {
 
-        internal static Regex reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
+        public static Regex reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
         
-        internal static Dictionary<string, string> BibliographyAsDictionary(FileInfo fullBib)
+        public static Dictionary<string, string> BibliographyAsDictionary(FileInfo fullBib)
         {
             var avails = new Dictionary<string, string>();
             using (var mdSourceS = fullBib.OpenText())

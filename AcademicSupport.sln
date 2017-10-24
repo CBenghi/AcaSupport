@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicSupport", "AcademicSupport\AcademicSupport.csproj", "{30091FDE-F9FE-40E7-BE9B-90079DFCF406}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{40F5333A-DCE2-4EFA-A0AD-976B59E0364A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperFlow", "PaperFlow\PaperFlow.csproj", "{17222503-9E97-4C13-9EF4-5FD1F8E6D031}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{40F5333A-DCE2-4EFA-A0AD-976B59E0364A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40F5333A-DCE2-4EFA-A0AD-976B59E0364A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40F5333A-DCE2-4EFA-A0AD-976B59E0364A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17222503-9E97-4C13-9EF4-5FD1F8E6D031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17222503-9E97-4C13-9EF4-5FD1F8E6D031}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17222503-9E97-4C13-9EF4-5FD1F8E6D031}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17222503-9E97-4C13-9EF4-5FD1F8E6D031}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {868377FE-02A7-45E3-B29E-9412D641EB9E}
 	EndGlobalSection
 EndGlobal

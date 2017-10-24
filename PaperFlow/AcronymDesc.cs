@@ -19,7 +19,7 @@ namespace AcademicSupport
         public List<int> AllBracketed;
         public bool Ignore = false;
 
-        internal AcronymDesc(string tla, string doc)
+        public AcronymDesc(string tla, string doc)
         {
             var bracketedMatch = new Regex(@"\([\s\*_]*" + tla + @"[\s\*_]*\)");
             AllBracketed = bracketedMatch.Matches(doc).Cast<Match>().Select(x => x.Index).ToList();
@@ -54,7 +54,7 @@ namespace AcademicSupport
             return $"{Status}\t{AllEntries.Count}\t{AllBracketed.Count}";
         }
 
-        internal static void RemovePluralForms(Dictionary<string, AcronymDesc> acronymDictionary)
+        public static void RemovePluralForms(Dictionary<string, AcronymDesc> acronymDictionary)
         {
             Regex endsInSmallS = new Regex("(.*)s$");
             var plurals = acronymDictionary.Keys.Where(x => endsInSmallS.IsMatch(x)).ToList();
