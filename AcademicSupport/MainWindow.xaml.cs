@@ -364,8 +364,9 @@ namespace AcademicSupport
                 s.citationStyle = CitationStyle.Text;
             }
             s.PlaceTable = GetBool(FilterPlacetable);
-            s.Numbering = GetBool(FilterNumbering);
+            // s.Numbering = GetBool(FilterNumbering);
             s.FilterFigno = GetBool(FilterFigno);
+            s.FilterTabno = GetBool(FilterTabno);
             s.SectionNumbering = GetBool(SectionNumbering);
 
             var conversion = s.Convert(f, _fileUnlocker);

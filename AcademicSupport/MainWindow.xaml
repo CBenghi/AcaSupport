@@ -44,8 +44,11 @@
                                 <GroupBox Header="Filters" Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <StackPanel>
                                         <CheckBox IsChecked="True" Margin="10,5" x:Name="FilterPlacetable" Content="PlaceTable" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                        <!--
                                         <CheckBox IsChecked="False" Margin="10,5" x:Name="FilterNumbering" Content="PlaceNumbering" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                                        <CheckBox IsChecked="False" Margin="10,5" x:Name="FilterFigno" Content="Fig. Numbers" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                        -->
+                                        <CheckBox IsChecked="True" Margin="10,5" x:Name="FilterFigno" Content="Fig. Numbers" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                        <CheckBox IsChecked="True" Margin="10,5" x:Name="FilterTabno" Content="Tab. Numbers" VerticalAlignment="Top" HorizontalAlignment="Left" />
                                     </StackPanel>
                                 </GroupBox>
                                 <CheckBox Margin="10,5" IsChecked="False" x:Name="SectionNumbering" Content="Section Numbering" HorizontalAlignment="Left" />

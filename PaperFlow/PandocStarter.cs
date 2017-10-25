@@ -25,6 +25,7 @@ namespace AcademicSupport
         public bool PlaceTable { get; set; }
         public bool Numbering { get; set; } = true;
         public bool FilterFigno { get; set; } = true;
+        public bool FilterTabno { get; set; } = true;
         public bool SectionNumbering { get; set; } = true;
         
         public PandocConversionResult Convert(FileInfo sourcefile, FileUnlocker unlocker = null)
@@ -43,14 +44,19 @@ namespace AcademicSupport
             
             var FilterList = new List<string>();
 
-            if (PlaceTable)
-                FilterList.Add("--filter pandoc-placetable");
+            
 
             if (Numbering)
                 FilterList.Add("--filter pandoc-numbering");
 
             if (FilterFigno)
                 FilterList.Add("--filter pandoc-fignos");
+
+            if (FilterTabno)
+                FilterList.Add("--filter pandoc-tablenos");
+
+            if (PlaceTable)
+                FilterList.Add("--filter pandoc-placetable");
 
             // todo: not sure if this works in docx format
             if (SectionNumbering)
