@@ -29,25 +29,35 @@
                 <local:StackedColumn x:Name="DailyCountBars" />
             </TabItem>
             <TabItem Header="Pandoc">
-                <Grid>
-                    <GroupBox Header="Settings" Margin="10,10,0,0" HorizontalAlignment="Left" Width="293" Height="143" VerticalAlignment="Top">
-                        <Grid>
-                            <Label Content="Style:" Margin="7,8,0,0" HorizontalAlignment="Left" Width="46" Height="30" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="CitationStyle" Margin="58,10,0,0" HorizontalAlignment="Left" Width="213" Height="21" VerticalAlignment="Top"/>
-                            <GroupBox Header="Filters" Margin="10,43,0,0" HorizontalAlignment="Left" Width="261" Height="68" VerticalAlignment="Top">
+                <StackPanel>
+                    <GroupBox Header="Settings" Margin="10,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,0">
+                            <StackPanel>
                                 <Grid>
-                                    <CheckBox IsChecked="True" x:Name="FilterPlacetable" Content="PlaceTable" Margin="45,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                                    <CheckBox IsChecked="False" x:Name="FilterNumbering" Content="PlaceNumbering" Margin="45,30,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Style:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <ComboBox Grid.Column="1" Margin="10,5" x:Name="CitationStyle" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
                                 </Grid>
-                            </GroupBox>
+                                <GroupBox Header="Filters" Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                                    <StackPanel>
+                                        <CheckBox IsChecked="True" Margin="10,5" x:Name="FilterPlacetable" Content="PlaceTable" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                        <CheckBox IsChecked="False" Margin="10,5" x:Name="FilterNumbering" Content="PlaceNumbering" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                        <CheckBox IsChecked="False" Margin="10,5" x:Name="FilterFigno" Content="Fig. Numbers" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                    </StackPanel>
+                                </GroupBox>
+                                <CheckBox Margin="10,5" IsChecked="False" x:Name="SectionNumbering" Content="Section Numbering" HorizontalAlignment="Left" />
+                            </StackPanel>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Launch" Height="86" Margin="10,158,0,0" HorizontalAlignment="Left" Width="293" VerticalAlignment="Top">
+                    <GroupBox Header="Launch"  Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                         <Grid>
-                            <Button x:Name="Other" Content="Convert any file" Margin="10,17,10,0" Click="Other_File" Height="28" VerticalAlignment="Top" />
+                            <Button x:Name="Other" Content="Convert any file" Margin="10,5" Click="Other_File"  />
                         </Grid>
                     </GroupBox>
-                </Grid>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

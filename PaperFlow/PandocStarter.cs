@@ -24,7 +24,9 @@ namespace AcademicSupport
         public string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
         public bool PlaceTable { get; set; }
         public bool Numbering { get; set; } = true;
-
+        public bool FilterFigno { get; set; } = true;
+        public bool SectionNumbering { get; set; } = true;
+        
         public PandocConversionResult Convert(FileInfo sourcefile, FileUnlocker unlocker = null)
         {
             // prepare pngs
@@ -46,6 +48,15 @@ namespace AcademicSupport
 
             if (Numbering)
                 FilterList.Add("--filter pandoc-numbering");
+
+            if (FilterFigno)
+                FilterList.Add("--filter pandoc-fignos");
+
+            // todo: not sure if this works in docx format
+            if (SectionNumbering)
+                FilterList.Add("--number-sections");
+
+
 
             FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
 
