@@ -44,7 +44,9 @@ namespace AcademicSupport
             
             var FilterList = new List<string>();
 
-            
+
+            if (FilterTabno)
+                FilterList.Add("--filter pandoc-tablenos");
 
             if (Numbering)
                 FilterList.Add("--filter pandoc-numbering");
@@ -52,8 +54,7 @@ namespace AcademicSupport
             if (FilterFigno)
                 FilterList.Add("--filter pandoc-fignos");
 
-            if (FilterTabno)
-                FilterList.Add("--filter pandoc-tablenos");
+            
 
             if (PlaceTable)
                 FilterList.Add("--filter pandoc-placetable");
