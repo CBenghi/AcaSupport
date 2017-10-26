@@ -38,6 +38,8 @@ namespace AcademicSupport
 
             // only if not null.
             unlocker?.RequestUnlock(dst.FullName);
+
+
             
             var FilterList = new List<string>();
 
@@ -50,12 +52,20 @@ namespace AcademicSupport
             FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
 
             var Filters = string.Join(" ", FilterList.ToArray());
-
+            
+            // template logic
+            string template = "";
+            var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
+            if (File.Exists(templateFileName))
+            {
+                template = $"--reference-docx \"{templateFileName}\"";
+            }
+            
             // todo: --number-sections can be added when working with html (it's ignored in docx anyway)
             //
             const string command = @"pandoc.exe";
             // var args = $"\"{sourcefile.FullName}\" {Filters} -f markdown -t docx -s -o \"{dst.FullName}\"";
-            var args = $"\"{sourcefile.FullName}\" {Filters} -s -o \"{dst.FullName}\"";
+            var args = $"\"{sourcefile.FullName}\" {Filters} {template} -s -o \"{dst.FullName}\"";
 
             var cmdline = command + " " + args;
 
