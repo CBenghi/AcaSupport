@@ -10,6 +10,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using Microsoft.Win32;
 using System.Text;
+using System.Windows.Controls;
 
 namespace AcademicSupport
 {
@@ -362,8 +363,12 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
-            s.PlaceTable = FilterPlacetable.IsChecked.HasValue && FilterPlacetable.IsChecked.Value;
-            s.Numbering = FilterNumbering.IsChecked.HasValue && FilterNumbering.IsChecked.Value;
+            s.PlaceTable = GetBool(FilterPlacetable);
+            // s.Numbering = GetBool(FilterNumbering);
+            s.FilterFigno = GetBool(FilterFigno);
+            s.FilterTabno = GetBool(FilterTabno);
+            s.SectionNumbering = GetBool(SectionNumbering);
+
             var conversion = s.Convert(f, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
@@ -380,6 +385,11 @@ namespace AcademicSupport
             {
                 Clipboard.SetText(conversion.Report);
             }
+        }
+
+        private bool GetBool(CheckBox checkBox)
+        {  
+            return checkBox.IsChecked.HasValue && checkBox.IsChecked.Value;
         }
 
         private FileInfo SelectedMarkDown
