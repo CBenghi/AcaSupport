@@ -23,7 +23,7 @@ namespace AcademicSupport
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
         public string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
         public bool PlaceTable { get; set; }
-        public bool Numbering { get; set; } = true;
+        public bool Numbering { get; set; } = false;
         public bool FilterFigno { get; set; } = true;
         public bool FilterTabno { get; set; } = true;
         public bool SectionNumbering { get; set; } = true;
