@@ -41,11 +41,8 @@ namespace AcademicSupport
 
             // only if not null.
             unlocker?.RequestUnlock(dst.FullName);
-
-
-            
+ 
             var FilterList = new List<string>();
-
 
             if (FilterTabno)
                 FilterList.Add("--filter pandoc-tablenos");
@@ -64,8 +61,6 @@ namespace AcademicSupport
             // todo: not sure if this works in docx format
             if (SectionNumbering)
                 FilterList.Add("--number-sections");
-
-
 
             FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
 
