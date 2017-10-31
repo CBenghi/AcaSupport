@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="AcronymTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PandocMarkDownTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AcademicSupport\AcademicSupport.csproj">
@@ -63,6 +64,14 @@
       <Project>{17222503-9e97-4c13-9ef4-5fd1f8e6d031}</Project>
       <Name>PaperFlow</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestFiles\BrokenSentences.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\WholeSentences.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

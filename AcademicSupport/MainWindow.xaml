@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AcademicSupport"
         mc:Ignorable="d"
         Icon="Icon.ico"
-        Title="Academic support" Height="600" Width="500">
+        Title="Academic support" Height="621.333" Width="559.333">
     <Grid>
         <Label x:Name="label" Content="Folder" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox Background="LightSkyBlue" x:Name="TxtFolder" Height="23" Margin="67,14,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
@@ -16,10 +16,13 @@
             <TabItem Header="Files">
                 <Grid>
                     <ListBox Background="LightYellow" x:Name="MarkDownList" Margin="10,10,10,39" MouseDoubleClick="PandocLaunch" />
+                    <!--
                     <Button x:Name="BibExtract2" IsEnabled="False" Content="Fix zot4 bib" Margin="0,0,10,10" Height="24" VerticalAlignment="Bottom" Click="BibExtractTwo_Click" RenderTransformOrigin="-1.744,0.613" HorizontalAlignment="Right" Width="85" />
+                    -->
                     <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="BibExtract_Click" />
                     <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
                     <Button x:Name="TLA" Content="Acronyms" Margin="190,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="CheckAcronyms" />
+                    <Button x:Name="ToPars" Content="Split Paragraphs" Margin="280,0,0,10" HorizontalAlignment="Left" Width="95" Height="24" VerticalAlignment="Bottom" Click="SplitPars" />
                 </Grid>
             </TabItem>
             <TabItem Header="File count curve">

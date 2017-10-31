@@ -11,6 +11,8 @@ using LiveCharts.Wpf;
 using Microsoft.Win32;
 using System.Text;
 using System.Windows.Controls;
+using PaperFlow.Markdown;
+using PaperFlow.MarkDown;
 
 namespace AcademicSupport
 {
@@ -218,7 +220,7 @@ namespace AcademicSupport
                     return null;
 
                 var fname = Path.Combine(f.FullName, _logfileName);
-                
+
                 var ret = new FileInfo(fname);
                 return ret;
             }
@@ -284,7 +286,7 @@ namespace AcademicSupport
                     }
                     else if (line.StartsWith("#map"))
                     {
-                        
+
                         var m = mapRe.Match(line);
                         _mappedFiles.Add(
                             m.Groups["from"].Value,
@@ -307,8 +309,8 @@ namespace AcademicSupport
 
         private string GetMap(string bName)
         {
-            return _mappedFiles.ContainsKey(bName) 
-                ? _mappedFiles[bName] 
+            return _mappedFiles.ContainsKey(bName)
+                ? _mappedFiles[bName]
                 : bName;
         }
 
@@ -348,7 +350,7 @@ namespace AcademicSupport
                 if (f == null)
                     return null;
                 var pth = Path.Combine(GetFolder().FullName, ".system");
-                return  new DirectoryInfo(pth);
+                return new DirectoryInfo(pth);
             }
         }
 
@@ -388,7 +390,7 @@ namespace AcademicSupport
         }
 
         private bool GetBool(CheckBox checkBox)
-        {  
+        {
             return checkBox.IsChecked.HasValue && checkBox.IsChecked.Value;
         }
 
@@ -413,7 +415,7 @@ namespace AcademicSupport
             var s = new PandocStarter(SysFolder);
             var fullBib = new FileInfo(s.BIB);
             var avails = BibliographyManagement.BibliographyAsDictionary(fullBib);
-            
+
             // produce new file
             //
             var mdSource = SelectedMarkDown;
@@ -451,7 +453,7 @@ namespace AcademicSupport
             if (string.IsNullOrWhiteSpace(d.FileName))
                 return;
             var fn = d.FileName;
-            
+
             var f = new FileInfo(fn);
 
             var s = new PandocStarter(SysFolder);
@@ -523,9 +525,9 @@ namespace AcademicSupport
 
             var titRe = new Regex(@"title = *([^\n])*");
 
-            
-            
-                var replaceIds = new Dictionary<string, string>();
+
+
+            var replaceIds = new Dictionary<string, string>();
             for (int i = 0; i < avails4.Count; i++)
             {
 
@@ -543,14 +545,14 @@ namespace AcademicSupport
                     }
                 }
             }
-            
+
 
             // produce new file
             //
             var mdSource = SelectedMarkDown;
             var mdBibName = Path.ChangeExtension(mdSource.FullName, ".2.md");
             var mdBib = new FileInfo(mdBibName);
-            
+
             using (var mdSourceS = mdSource.OpenText())
             using (var mdBibS = mdBib.CreateText())
             {
@@ -565,7 +567,7 @@ namespace AcademicSupport
             }
         }
 
-       
+
         private void CheckAcronyms(object sender, RoutedEventArgs e)
         {
             var mdSource = SelectedMarkDown;
@@ -600,10 +602,20 @@ namespace AcademicSupport
                 cnt++;
                 sb.AppendLine(item.Key + "\t" + item.Value.ToS());
             }
-            
+
             Clipboard.SetText(sb.ToString());
             MessageBox.Show($"{doneMatches.Count} matches found, {cnt} copied to clipboard, excluding ignores.");
 
+        }
+
+        private void SplitPars(object sender, RoutedEventArgs e)
+        {
+            var mdSource = SelectedMarkDown;
+            using (var p = new PandocMarkDownReader(mdSource))
+            {
+                var broken = PandocMarkdown.BreakSentences(p);
+                Clipboard.SetText(broken);
+            }
         }
     }
 }

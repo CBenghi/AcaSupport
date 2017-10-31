@@ -6,13 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace PaperFlow.Markdown
 {
-    internal class PandocMarkDownReader : IDisposable
+    public class PandocMarkDownReader : IDisposable
     {
-        StreamReader _reader;
-        
-        internal PandocMarkDownReader(FileInfo fin)
+        TextReader _reader;
+
+        public PandocMarkDownReader(FileInfo fin)
         {
             _reader = fin.OpenText();
+        }
+
+        public PandocMarkDownReader(string markDownString)
+        {
+            _reader = new StringReader(markDownString);
         }
 
         public void Dispose()
@@ -25,16 +30,42 @@ namespace PaperFlow.Markdown
             return GetFragments(_reader);
         }
 
-        internal static IEnumerable<PandocMarkDownFragment> GetFragments(StreamReader reader)
+        internal static IEnumerable<PandocMarkDownFragment> GetFragments(TextReader reader)
         {
-            var re = new Regex(@"^[`{3,}|`{3,}]");
+            var codeblockEndingSequence = "";
 
-            while (!reader.EndOfStream)
+            var status = PandocMarkDownFragment.FragmentType.Default;
+            var cbRe = new Regex(@"^([`{3,}|~{3,}])");
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                // todo discriminate code blocks
-                //
-                var line = reader.ReadLine();
-                yield return new PandocMarkDownFragment(line, PandocMarkDownFragment.FragmentType.undiscriminated);
+                switch (status)
+                {
+                    case PandocMarkDownFragment.FragmentType.CodeBlock:
+                        // check exit clause
+                        yield return new PandocMarkDownFragment(line, status);
+                        if (line.StartsWith(codeblockEndingSequence))
+                        {
+                            status = PandocMarkDownFragment.FragmentType.Default;
+                        }
+                        break;
+                    case PandocMarkDownFragment.FragmentType.Default:
+                        // codeblock found?
+                        var cbm = cbRe.Match(line);
+                        if (cbm.Success)
+                        {
+                            status = PandocMarkDownFragment.FragmentType.CodeBlock;
+                            codeblockEndingSequence = cbm.Groups[1].Value;
+                            yield return new PandocMarkDownFragment(line, status);
+                            break;
+                        }
+                        else
+                        {
+                            yield return new PandocMarkDownFragment(line, status);
+                            break;
+                        }   
+                
+                }
             }
         }
     }

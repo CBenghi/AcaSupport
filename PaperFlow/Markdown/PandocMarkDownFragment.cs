@@ -6,19 +6,19 @@ namespace PaperFlow.Markdown
 {
     public class PandocMarkDownFragment
     {
-        private string _content;
-        private FragmentType _type;
+        public string Content;
+        public FragmentType Type;
 
         public PandocMarkDownFragment(string content, FragmentType type)
         {
-            _content = content;
-            _type = type;
+            Content = content;
+            Type = type;
         }
 
         public enum FragmentType
         {
-            codeblock,
-            undiscriminated
+            CodeBlock,
+            Default
         }
     }
 }
