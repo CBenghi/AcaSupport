@@ -416,30 +416,40 @@ namespace AcademicSupport
             var fullBib = new FileInfo(s.BIB);
             var avails = BibliographyManagement.BibliographyAsDictionary(fullBib);
 
-            // produce new file
+
+            // get the matching references
             //
             var mdSource = SelectedMarkDown;
-            var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
-            var mdBib = new FileInfo(mdBibName);
-            var doneMatches = new List<string>();
-            var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled); // refkey in markdown 
-            using (var mdSourceS = mdSource.OpenText())
-            using (var mdBibS = mdBib.CreateText())
-            {
-                var markDown = mdSourceS.ReadToEnd();
-                foreach (Match match in reRefKey.Matches(markDown))
-                {
-                    var key = match.Value;
-                    if (doneMatches.Contains(key))
-                        continue;
-                    string bib;
-                    var found = avails.TryGetValue(key, out bib);
-                    if (!found)
-                        continue;
-                    mdBibS.WriteLine(bib);
-                    doneMatches.Add(key);
-                }
-            }
+            var usages = BibliographyManagement.GetUsage(mdSource, avails.Keys);
+
+
+            
+
+
+            //// produce new file
+            ////
+            //var mdSource = SelectedMarkDown;
+            //var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
+            //var mdBib = new FileInfo(mdBibName);
+            //var doneMatches = new List<string>();
+            //var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled); // refkey in markdown 
+            //using (var mdSourceS = mdSource.OpenText())
+            //using (var mdBibS = mdBib.CreateText())
+            //{
+            //    var markDown = mdSourceS.ReadToEnd();
+            //    foreach (Match match in reRefKey.Matches(markDown))
+            //    {
+            //        var key = match.Value;
+            //        if (doneMatches.Contains(key))
+            //            continue;
+            //        string bib;
+            //        var found = avails.TryGetValue(key, out bib);
+            //        if (!found)
+            //            continue;
+            //        mdBibS.WriteLine(bib);
+            //        doneMatches.Add(key);
+            //    }
+            //}
         }
 
         private void Other_File(object sender, RoutedEventArgs e)

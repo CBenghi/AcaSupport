@@ -49,5 +49,43 @@ namespace AcademicSupport
             return avails;
         }
 
+        public static Dictionary<string, List<string>> GetUsage(FileInfo mdSource, IEnumerable<string> keys)
+        {
+            var doneMatches = new Dictionary<string, List<string>>();
+            var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled); // refkey in markdown 
+            using (var mdSourceS = mdSource.OpenText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                
+                foreach (var key in keys)
+                {
+                    List<string> thisKeyAdded = null;
+                    var kRegex = new Regex(
+                        // an open bracket not followed by a closed
+                        @"(" + // capturing group
+                        @"\[" + // open bracket
+                        @"[^\]]*" + // anything but a closed one zero or more
+                        @")?" + // end capturing group, optional
+                        key + // the key
+                        @"(" + // capturing group
+                        @"[^\[]*" + // anything but an open one zero or more
+                        @"\]" + // then a closing
+                        @")?" + // end capturing group, optional
+                        @"" + // open bracket
+                        @""
+                        );                   
+                    foreach (Match match in kRegex.Matches(markDown))
+                    {
+                        if (thisKeyAdded == null)
+                        {
+                            thisKeyAdded = new List<string>();
+                            doneMatches.Add(key, thisKeyAdded);
+                        }
+                        thisKeyAdded.Add(match.Value);
+                    }
+                }
+            }
+            return doneMatches;
+        }
     }
 }
