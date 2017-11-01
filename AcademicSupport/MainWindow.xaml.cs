@@ -421,35 +421,27 @@ namespace AcademicSupport
             //
             var mdSource = SelectedMarkDown;
             var usages = BibliographyManagement.GetUsage(mdSource, avails.Keys);
-
-
             
 
 
-            //// produce new file
-            ////
-            //var mdSource = SelectedMarkDown;
-            //var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
-            //var mdBib = new FileInfo(mdBibName);
-            //var doneMatches = new List<string>();
-            //var reRefKey = new Regex("@[a-zA-Z0-9:_]+", RegexOptions.Compiled); // refkey in markdown 
-            //using (var mdSourceS = mdSource.OpenText())
-            //using (var mdBibS = mdBib.CreateText())
-            //{
-            //    var markDown = mdSourceS.ReadToEnd();
-            //    foreach (Match match in reRefKey.Matches(markDown))
-            //    {
-            //        var key = match.Value;
-            //        if (doneMatches.Contains(key))
-            //            continue;
-            //        string bib;
-            //        var found = avails.TryGetValue(key, out bib);
-            //        if (!found)
-            //            continue;
-            //        mdBibS.WriteLine(bib);
-            //        doneMatches.Add(key);
-            //    }
-            //}
+            // produce new file
+            //
+            var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
+            var mdBib = new FileInfo(mdBibName);
+            var ret = MessageBox.Show($"{usages.Count} references used. Write to {mdBib.FullName} file?", "", MessageBoxButton.YesNoCancel);
+            if (ret != MessageBoxResult.Yes)
+                return;
+            
+            using (var mdBibS = mdBib.CreateText())
+            {
+                foreach (var key in usages.Keys)
+                {
+                    var found = avails.TryGetValue(key, out string bib);
+                    if (!found)
+                        continue;
+                    mdBibS.WriteLine(bib);
+                }
+            }
         }
 
         private void Other_File(object sender, RoutedEventArgs e)
