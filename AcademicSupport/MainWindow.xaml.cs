@@ -371,7 +371,7 @@ namespace AcademicSupport
             s.FilterTabno = GetBool(FilterTabno);
             s.SectionNumbering = GetBool(SectionNumbering);
 
-            var conversion = s.Convert(f, _fileUnlocker);
+            var conversion = s.MarkDownToWord(f, null, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {
@@ -461,7 +461,7 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
-            var conversion = s.Convert(f, _fileUnlocker);
+            var conversion = s.MarkDownToWord(f, null, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {

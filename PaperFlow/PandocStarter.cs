@@ -27,21 +27,47 @@ namespace AcademicSupport
         public bool FilterFigno { get; set; } = true;
         public bool FilterTabno { get; set; } = true;
         public bool SectionNumbering { get; set; } = true;
-        
-        public PandocConversionResult Convert(FileInfo sourcefile, FileUnlocker unlocker = null)
+
+        public PandocConversionResult WordToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        {
+            // if no destination specified then write to system folder
+            if (destFile == null)
+            {
+                destFile = new FileInfo(
+                    Path.Combine(
+                        Path.Combine(_sysFolder.FullName, "pandoc-out"),
+                        sourcefile.Name + ".md")
+                    );
+            }
+
+            // only if not null.
+            unlocker?.RequestUnlock(destFile.FullName);
+            
+            var args = $"";
+            PandocConversionResult res = RunPandoc(sourcefile, destFile, args);
+            return res;
+        }
+
+
+        public PandocConversionResult MarkDownToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
             // prepare pngs
             var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
             Svg.ConvertVectorGraphics(d);
 
-            var dst = new FileInfo(
-                Path.Combine(
-                    Path.Combine(_sysFolder.FullName, "pandoc-out"),
-                    sourcefile.Name + ".docx"));
+            // if no destination specified then write to system folder
+            if (destFile == null)
+            {
+                destFile = new FileInfo(
+                    Path.Combine(
+                        Path.Combine(_sysFolder.FullName, "pandoc-out"),
+                        sourcefile.Name + ".docx")
+                    );
+            }
 
             // only if not null.
-            unlocker?.RequestUnlock(dst.FullName);
- 
+            unlocker?.RequestUnlock(destFile.FullName);
+
             var FilterList = new List<string>();
 
             if (FilterTabno)
@@ -53,19 +79,18 @@ namespace AcademicSupport
             if (FilterFigno)
                 FilterList.Add("--filter pandoc-fignos");
 
-            
-
             if (PlaceTable)
                 FilterList.Add("--filter pandoc-placetable");
 
-            // todo: not sure if this works in docx format
+            // --number-sections can be added when working with html
+            // it's ignored in docx anyway
             if (SectionNumbering)
                 FilterList.Add("--number-sections");
-
+            
             FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
 
             var Filters = string.Join(" ", FilterList.ToArray());
-            
+
             // template logic
             string template = "";
             var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
@@ -74,14 +99,18 @@ namespace AcademicSupport
                 template = $"--reference-docx \"{templateFileName}\"";
             }
             
-            // todo: --number-sections can be added when working with html (it's ignored in docx anyway)
+            // -s is for standalone, it produces comprehensive files, rather than fragments
             //
+            var args = $"{Filters} {template} -s";
+            PandocConversionResult res = RunPandoc(sourcefile, destFile, args);
+            return res;
+        }
+
+        private static PandocConversionResult RunPandoc(FileInfo sourcefile, FileInfo destFile, string args)
+        {
+            args = $"\"{sourcefile.FullName}\" {args} -o \"{destFile.FullName}\"";
             const string command = @"pandoc.exe";
-            // var args = $"\"{sourcefile.FullName}\" {Filters} -f markdown -t docx -s -o \"{dst.FullName}\"";
-            var args = $"\"{sourcefile.FullName}\" {Filters} {template} -s -o \"{dst.FullName}\"";
-
             var cmdline = command + " " + args;
-
             // instantiate process
             var process = new Process
             {
@@ -108,9 +137,9 @@ namespace AcademicSupport
             stopWatch.Stop();
             var res = new PandocConversionResult
             {
-                ConvertedFile = dst,
+                ConvertedFile = destFile,
                 Milliseconds = stopWatch.ElapsedMilliseconds,
-                Report = Uri.UnescapeDataString(retT), 
+                Report = Uri.UnescapeDataString(retT),
                 ExitCode = process.ExitCode
             };
             return res;
