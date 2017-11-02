@@ -48,6 +48,26 @@ namespace AcademicSupport
             return res;
         }
 
+        public PandocConversionResult MarkDownToJson(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        {
+            // if no destination specified then write to system folder
+            if (destFile == null)
+            {
+                destFile = new FileInfo(
+                    Path.Combine(
+                        Path.Combine(_sysFolder.FullName, "pandoc-out"),
+                        sourcefile.Name + ".json")
+                    );
+            }
+
+            // only if not null.
+            unlocker?.RequestUnlock(destFile.FullName);
+
+            var args = $"-t json";
+            PandocConversionResult res = RunPandoc(sourcefile, destFile, args);
+            return res;
+        }
+
 
         public PandocConversionResult MarkDownToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {

@@ -23,6 +23,7 @@
                     <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
                     <Button x:Name="TLA" Content="Acronyms" Margin="190,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="CheckAcronyms" />
                     <Button x:Name="ToPars" Content="Split Paragraphs" Margin="280,0,0,10" HorizontalAlignment="Left" Width="95" Height="24" VerticalAlignment="Bottom" Click="SplitPars" />
+                    <Button x:Name="ToJsonButton" Content="To Json" Margin="380,0,0,10" HorizontalAlignment="Left" Width="95" Height="24" VerticalAlignment="Bottom" Click="ToJson" />
                 </Grid>
             </TabItem>
             <TabItem Header="File count curve">

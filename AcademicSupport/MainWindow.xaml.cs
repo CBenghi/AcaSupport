@@ -619,5 +619,16 @@ namespace AcademicSupport
                 Clipboard.SetText(broken);
             }
         }
+
+        private void ToJson(object sender, RoutedEventArgs e)
+        {
+            var f = SelectedMarkDown;
+            var s = new PandocStarter(SysFolder);
+            //if (!string.IsNullOrEmpty(CitationStyle.Text))
+            //{
+            //    s.citationStyle = CitationStyle.Text;
+            //}
+            var conversion = s.MarkDownToJson(f, null, _fileUnlocker);
+        }
     }
 }
