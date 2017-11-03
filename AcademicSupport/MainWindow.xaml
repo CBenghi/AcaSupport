@@ -23,7 +23,6 @@
                     <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
                     <Button x:Name="TLA" Content="Acronyms" Margin="190,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="CheckAcronyms" />
                     <Button x:Name="ToPars" Content="Split Paragraphs" Margin="280,0,0,10" HorizontalAlignment="Left" Width="95" Height="24" VerticalAlignment="Bottom" Click="SplitPars" />
-                    <Button x:Name="ToJsonButton" Content="To Json" Margin="380,0,0,10" HorizontalAlignment="Left" Width="95" Height="24" VerticalAlignment="Bottom" Click="ToJson" />
                 </Grid>
             </TabItem>
             <TabItem Header="File count curve">
@@ -38,12 +37,23 @@
                         <Grid Margin="0,0,0,0">
                             <StackPanel>
                                 <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Style:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <ComboBox Grid.Column="1" Margin="10,5" x:Name="CitationStyle" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+
+                                    <Label Grid.Row="1" Content="Format:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="10,5" x:Name="FormatOut" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                        <ComboBoxItem IsSelected="True" >word</ComboBoxItem>
+                                        <ComboBoxItem>markdown</ComboBoxItem>
+                                        <ComboBoxItem>json</ComboBoxItem>
+                                    </ComboBox>
                                 </Grid>
                                 <GroupBox Header="Filters" Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <StackPanel>
@@ -56,6 +66,8 @@
                                     </StackPanel>
                                 </GroupBox>
                                 <CheckBox Margin="10,5" IsChecked="False" x:Name="SectionNumbering" Content="Section Numbering" HorizontalAlignment="Left" />
+                                <CheckBox Margin="10,5" IsChecked="False" x:Name="WrapPreserve" Content="Wrap: Preserve" HorizontalAlignment="Left" />
+                                <CheckBox Margin="10,5" IsChecked="True" x:Name="OpenWhenDone" Content="Open converted file" HorizontalAlignment="Left" />
                             </StackPanel>
                         </Grid>
                     </GroupBox>

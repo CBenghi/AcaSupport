@@ -359,33 +359,63 @@ namespace AcademicSupport
         private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var f = SelectedMarkDown;
-
             var s = new PandocStarter(SysFolder);
-            if (!string.IsNullOrEmpty(CitationStyle.Text))
-            {
-                s.citationStyle = CitationStyle.Text;
-            }
-            s.PlaceTable = GetBool(FilterPlacetable);
-            // s.Numbering = GetBool(FilterNumbering);
-            s.FilterFigno = GetBool(FilterFigno);
-            s.FilterTabno = GetBool(FilterTabno);
-            s.SectionNumbering = GetBool(SectionNumbering);
+            s.WrapPreserve = GetBool(WrapPreserve);
 
-            var conversion = s.MarkDownToWord(f, null, _fileUnlocker);
-            var ret = MessageBoxResult.Yes;
-            if (!string.IsNullOrWhiteSpace(conversion.Report))
+            PandocConversionResult conversion = null;
+
+            switch(FormatOut.Text)
             {
-                ret = MessageBox.Show(this,
-                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
-                    MessageBoxButton.YesNoCancel);
+                case "word":
+                    if (!string.IsNullOrEmpty(CitationStyle.Text))
+                    {
+                        s.citationStyle = CitationStyle.Text;
+                    }
+                    s.PlaceTable = GetBool(FilterPlacetable);
+                    // s.Numbering = GetBool(FilterNumbering);
+                    s.FilterFigno = GetBool(FilterFigno);
+                    s.FilterTabno = GetBool(FilterTabno);
+                    s.SectionNumbering = GetBool(SectionNumbering);
+                    conversion = s.ToWord(f, null, _fileUnlocker);
+                    break;
+                case "json":
+                    conversion = s.ToJson(f, null, _fileUnlocker);
+                    break;
+                case "markdown":
+                    conversion = s.ToMarkDown(f, null, _fileUnlocker);
+                    break;
+
             }
-            if (ret == MessageBoxResult.Yes)
+            if (GetBool(OpenWhenDone))
             {
-                Process.Start(conversion.ConvertedFile.FullName);
+                var ret = MessageBoxResult.Yes;
+                if (!string.IsNullOrWhiteSpace(conversion.Report))
+                {
+                    ret = MessageBox.Show(this,
+                        $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
+                        MessageBoxButton.YesNoCancel);
+                }
+                if (ret == MessageBoxResult.Yes)
+                {
+                    Process.Start(conversion.ConvertedFile.FullName);
+                }
+                else if (ret == MessageBoxResult.No)
+                {
+                    Clipboard.SetText(conversion.Report);
+                }
             }
-            else if (ret == MessageBoxResult.No)
+            else
             {
-                Clipboard.SetText(conversion.Report);
+                if (!string.IsNullOrWhiteSpace(conversion.Report))
+                {
+                    var ret = MessageBox.Show(this,
+                        $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I copy the error to the clipboard.", "Error",
+                        MessageBoxButton.YesNoCancel);
+                    if (ret == MessageBoxResult.Yes)
+                    {
+                        Clipboard.SetText(conversion.Report);
+                    }
+                }
             }
         }
 
@@ -463,7 +493,7 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
-            var conversion = s.MarkDownToWord(f, null, _fileUnlocker);
+            var conversion = s.ToWord(f, null, _fileUnlocker);
             var ret = MessageBoxResult.Yes;
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {
@@ -618,17 +648,6 @@ namespace AcademicSupport
                 var broken = PandocMarkdown.BreakSentences(p);
                 Clipboard.SetText(broken);
             }
-        }
-
-        private void ToJson(object sender, RoutedEventArgs e)
-        {
-            var f = SelectedMarkDown;
-            var s = new PandocStarter(SysFolder);
-            //if (!string.IsNullOrEmpty(CitationStyle.Text))
-            //{
-            //    s.citationStyle = CitationStyle.Text;
-            //}
-            var conversion = s.MarkDownToJson(f, null, _fileUnlocker);
         }
     }
 }

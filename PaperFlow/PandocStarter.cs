@@ -27,8 +27,10 @@ namespace AcademicSupport
         public bool FilterFigno { get; set; } = true;
         public bool FilterTabno { get; set; } = true;
         public bool SectionNumbering { get; set; } = true;
+        public bool WrapPreserve { get; set; } = false;
+        
 
-        public PandocConversionResult WordToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        public PandocConversionResult ToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
             // if no destination specified then write to system folder
             if (destFile == null)
@@ -44,11 +46,13 @@ namespace AcademicSupport
             unlocker?.RequestUnlock(destFile.FullName);
             
             var args = $"";
+            if (WrapPreserve)
+                args = "--wrap=preserve";
             PandocConversionResult res = RunPandoc(sourcefile, destFile, args);
             return res;
         }
 
-        public PandocConversionResult MarkDownToJson(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        public PandocConversionResult ToJson(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
             // if no destination specified then write to system folder
             if (destFile == null)
@@ -69,7 +73,7 @@ namespace AcademicSupport
         }
 
 
-        public PandocConversionResult MarkDownToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        public PandocConversionResult ToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
             // prepare pngs
             var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
