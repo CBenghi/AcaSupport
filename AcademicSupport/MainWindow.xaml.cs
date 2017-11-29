@@ -359,8 +359,18 @@ namespace AcademicSupport
         private void PandocLaunch(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var f = SelectedMarkDown;
-            var s = new PandocStarter(SysFolder);
-            s.WrapPreserve = GetBool(WrapPreserve);
+
+            Svg svg = new Svg()
+            {
+                ForceRefresh = (bool)InkscapeRefresh.IsChecked,
+                ResolutionDPI = Convert.ToInt32(InkscapeResolution.Text),
+                TimeOutSeconds = Convert.ToInt32(InkscapeTimeout.Text)
+            };
+
+            var converter = new PandocStarter(SysFolder);
+            converter.ImageConverter = svg;
+            
+            converter.WrapPreserve = GetBool(WrapPreserve);
 
             PandocConversionResult conversion = null;
 
@@ -369,20 +379,20 @@ namespace AcademicSupport
                 case "word":
                     if (!string.IsNullOrEmpty(CitationStyle.Text))
                     {
-                        s.citationStyle = CitationStyle.Text;
+                        converter.citationStyle = CitationStyle.Text;
                     }
-                    s.PlaceTable = GetBool(FilterPlacetable);
+                    converter.PlaceTable = GetBool(FilterPlacetable);
                     // s.Numbering = GetBool(FilterNumbering);
-                    s.FilterFigno = GetBool(FilterFigno);
-                    s.FilterTabno = GetBool(FilterTabno);
-                    s.SectionNumbering = GetBool(SectionNumbering);
-                    conversion = s.ToWord(f, null, _fileUnlocker);
+                    converter.FilterFigno = GetBool(FilterFigno);
+                    converter.FilterTabno = GetBool(FilterTabno);
+                    converter.SectionNumbering = GetBool(SectionNumbering);
+                    conversion = converter.ToWord(f, null, _fileUnlocker);
                     break;
                 case "json":
-                    conversion = s.ToJson(f, null, _fileUnlocker);
+                    conversion = converter.ToJson(f, null, _fileUnlocker);
                     break;
                 case "markdown":
-                    conversion = s.ToMarkDown(f, null, _fileUnlocker);
+                    conversion = converter.ToMarkDown(f, null, _fileUnlocker);
                     break;
 
             }

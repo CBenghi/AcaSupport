@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcademicSupport
 {
     public class Svg
     {
-        public static void ConvertVectorGraphics(DirectoryInfo d)
+        public int ResolutionDPI = 150;
+
+        public int TimeOutSeconds = 10;
+
+        public bool ForceRefresh = false;
+
+
+        public void ConvertVectorGraphics(DirectoryInfo d)
         {
             Console.WriteLine($"Converting SVG images in {d.FullName}");
             if (!d.Exists)
@@ -21,7 +24,10 @@ namespace AcademicSupport
             {
                 // if png exists and is newer than source
                 var png = new FileInfo(svg.FullName + ".png");
-                if (png.Exists && png.LastWriteTime > svg.LastWriteTime)
+                if (png.Exists 
+                    && png.LastWriteTime > svg.LastWriteTime
+                    && !ForceRefresh
+                    )
                     continue; // exit
 
                 // otherwise convert
@@ -30,7 +36,7 @@ namespace AcademicSupport
                 const string command = @"C:\Program Files\Inkscape\inkscape.exe";
                 var args = $"--file=\"{svg.FullName}\" " +
                            $"--export-png=\"{png.FullName}\" " +
-                           "--export-dpi=150 " +
+                           $"--export-dpi={ResolutionDPI} " +
                            "--export-area-page";
 
                 var stopWatch = new Stopwatch();
@@ -46,7 +52,7 @@ namespace AcademicSupport
                     }
                 };
                 process.Start();
-                process.WaitForExit();
+                process.WaitForExit(TimeOutSeconds * 1000);
 
                 // once stopped 
                 stopWatch.Stop();

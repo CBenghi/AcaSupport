@@ -28,6 +28,7 @@ namespace AcademicSupport
         public bool FilterTabno { get; set; } = true;
         public bool SectionNumbering { get; set; } = true;
         public bool WrapPreserve { get; set; } = false;
+        public Svg ImageConverter { get; set; }
         
 
         public PandocConversionResult ToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
@@ -77,7 +78,7 @@ namespace AcademicSupport
         {
             // prepare pngs
             var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
-            Svg.ConvertVectorGraphics(d);
+            ImageConverter.ConvertVectorGraphics(d);
 
             // if no destination specified then write to system folder
             if (destFile == null)

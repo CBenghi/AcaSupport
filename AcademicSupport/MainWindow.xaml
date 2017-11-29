@@ -78,6 +78,46 @@
                     </GroupBox>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="InkScape">
+                <StackPanel>
+                    <GroupBox Header="Inkscape Settings" Margin="10,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Grid Margin="0,0,0,0">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Resolution:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <ComboBox x:Name="InkscapeResolution" Grid.Column="1" Margin="10,5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                        <ComboBoxItem IsSelected="True" Content="150"/>
+                                        <ComboBoxItem Content="300"/>
+                                    </ComboBox>
+
+                                    <Label Grid.Row="1" Content="Timeout:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <ComboBox x:Name="InkscapeTimeout" Grid.Row="1" Grid.Column="1" Margin="10,5" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                        <ComboBoxItem IsSelected="True" >15</ComboBoxItem>
+                                        <ComboBoxItem>60</ComboBoxItem>
+                                        <ComboBoxItem>300</ComboBoxItem>
+                                    </ComboBox>
+
+                                    <Label Grid.Row="2" Content="Images" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <CheckBox  x:Name="InkscapeRefresh" Grid.Row="2" Grid.Column="1" 
+                                               Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                                               >Force refresh</CheckBox>
+
+
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

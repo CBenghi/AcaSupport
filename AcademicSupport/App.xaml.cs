@@ -32,7 +32,8 @@ namespace AcademicSupport
                     folder = e.Args[1];
                 }
                 var d = new DirectoryInfo(folder);
-                Svg.ConvertVectorGraphics(d);
+                var svg = new Svg();
+                svg.ConvertVectorGraphics(d);
                 Current.Shutdown();
             }
         }
