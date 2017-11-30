@@ -453,10 +453,9 @@ namespace AcademicSupport
             // get available bib keys
             //
             var s = new PandocStarter(SysFolder);
-            var fullBib = new FileInfo(s.BIB);
-            var avails = BibliographyManagement.BibliographyAsDictionary(fullBib);
-
-
+            var systemBib = new FileInfo(s.BIB(null));
+            var avails = BibliographyManagement.BibliographyAsDictionary(systemBib);
+            
             // get the matching references
             //
             var mdSource = SelectedMarkDown;

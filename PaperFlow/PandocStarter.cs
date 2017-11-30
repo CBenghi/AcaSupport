@@ -21,7 +21,20 @@ namespace AcademicSupport
         private string bibLibrary = "biblatex.bib";
 
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
-        public string BIB => Path.Combine(_sysFolder.FullName, bibLibrary);
+        public string BIB(FileInfo sourceFile)
+        {
+            // PreferPaperBib
+            if (PreferPaperBib && sourceFile!= null)
+            {
+                var localfile = Path.ChangeExtension(sourceFile.FullName, ".bib");
+                if (File.Exists(localfile))
+                    return localfile;
+
+            }
+            return Path.Combine(_sysFolder.FullName, bibLibrary);
+        }
+            
+            
         public bool PlaceTable { get; set; }
         public bool Numbering { get; set; } = false;
         public bool FilterFigno { get; set; } = true;
@@ -29,7 +42,12 @@ namespace AcademicSupport
         public bool SectionNumbering { get; set; } = true;
         public bool WrapPreserve { get; set; } = false;
         public Svg ImageConverter { get; set; }
-        
+
+        /// <summary>
+        /// This bit determines if a local bib file has to be preferred to the main repository, when available.
+        /// </summary>
+        public bool PreferPaperBib { get; set; } = true;
+
 
         public PandocConversionResult ToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
@@ -78,7 +96,7 @@ namespace AcademicSupport
         {
             // prepare pngs
             var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
-            ImageConverter.ConvertVectorGraphics(d);
+            ImageConverter?.ConvertVectorGraphics(d);
 
             // if no destination specified then write to system folder
             if (destFile == null)
@@ -112,7 +130,7 @@ namespace AcademicSupport
             if (SectionNumbering)
                 FilterList.Add("--number-sections");
             
-            FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB}\"");
+            FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB(sourcefile)}\"");
 
             var Filters = string.Join(" ", FilterList.ToArray());
 
