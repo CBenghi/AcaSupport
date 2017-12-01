@@ -22,44 +22,49 @@ namespace AcademicSupport
             var svgs = d.GetFiles("*.svg", SearchOption.AllDirectories);
             foreach (var svg in svgs)
             {
-                // if png exists and is newer than source
-                var png = new FileInfo(svg.FullName + ".png");
-                if (png.Exists 
-                    && png.LastWriteTime > svg.LastWriteTime
-                    && !ForceRefresh
-                    )
-                    continue; // exit
+                ConvertVectorGraphics(svg);
+            }
+        }
 
-                // otherwise convert
-                Console.Write($" - \"{png.FullName}\"... ");
+        internal void ConvertVectorGraphics(FileInfo svg)
+        {
+            // if png exists and is newer than source
+            var png = new FileInfo(svg.FullName + ".png");
+            if (png.Exists
+                && png.LastWriteTime > svg.LastWriteTime
+                && !ForceRefresh
+                )
+                return; // exit
 
-                const string command = @"C:\Program Files\Inkscape\inkscape.exe";
-                var args = $"--file=\"{svg.FullName}\" " +
-                           $"--export-png=\"{png.FullName}\" " +
-                           $"--export-dpi={ResolutionDPI} " +
-                           "--export-area-page";
+            // otherwise convert
+            Console.Write($" - \"{png.FullName}\"... ");
 
-                var stopWatch = new Stopwatch();
-                stopWatch.Start();
+            const string command = @"C:\Program Files\Inkscape\inkscape.exe";
+            var args = $"--file=\"{svg.FullName}\" " +
+                       $"--export-png=\"{png.FullName}\" " +
+                       $"--export-dpi={ResolutionDPI} " +
+                       "--export-area-page";
 
-                // instantiate and launch process
-                var process = new Process
-                {
-                    StartInfo =
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            // instantiate and launch process
+            var process = new Process
+            {
+                StartInfo =
                     {
                         FileName = command,
                         Arguments = args
                     }
-                };
-                process.Start();
-                process.WaitForExit(TimeOutSeconds * 1000);
+            };
+            process.Start();
+            process.WaitForExit(TimeOutSeconds * 1000);
 
-                // once stopped 
-                stopWatch.Stop();
+            // once stopped 
+            stopWatch.Stop();
 
-                // report
-                // Console.WriteLine($"{stopWatch.Elapsed.Milliseconds} ms.");
-            }
+            // report
+            // Console.WriteLine($"{stopWatch.Elapsed.Milliseconds} ms.");
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using AcademicSupport;
 using PaperFlow;
+using PaperFlow.Markdown;
+using System.Linq;
 
 namespace AcademicSupport
 {
@@ -94,9 +96,39 @@ namespace AcademicSupport
 
         public PandocConversionResult ToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
-            // prepare pngs
-            var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
-            ImageConverter?.ConvertVectorGraphics(d);
+
+            if (ImageConverter != null)
+            {
+                var errorImages = new List<string>();
+                // prepare pngs
+                
+                foreach (var imageFileInfo in PandocMarkDownImages.GetImages(sourcefile))
+                {
+                    if (imageFileInfo.Name.EndsWith(".svg.png"))
+                    {
+                        var svgFileInfo = new FileInfo(imageFileInfo.FullName.Substring(0, imageFileInfo.FullName.Length - 4));
+                        ImageConverter.ConvertVectorGraphics(svgFileInfo);
+                    }
+                    if (!imageFileInfo.Exists)
+                    {
+                        errorImages.Add(imageFileInfo.FullName);
+                        continue;
+                    }
+                }
+                if (errorImages.Any())
+                {
+                    var result = new PandocConversionResult()
+                    {
+                        Report = @"Images missing:\r\n- " + string.Join("\r\n- ", errorImages)
+                    };
+                    return result;
+                }
+
+                //// directory approach
+                //var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
+                //ImageConverter.ConvertVectorGraphics(d);
+            }
+            
 
             // if no destination specified then write to system folder
             if (destFile == null)
