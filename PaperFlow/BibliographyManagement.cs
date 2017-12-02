@@ -59,7 +59,7 @@ namespace AcademicSupport
                 
                 foreach (var key in keys)
                 {
-                    List<string> thisKeyAdded = null;
+                    List<string> thisKeyList = null;
                     var kRegex = new Regex(
                         // an open bracket not followed by a closed
                         @"(" + // capturing group
@@ -67,6 +67,7 @@ namespace AcademicSupport
                         @"[^\]]*" + // anything but a closed one zero or more
                         @")?" + // end capturing group, optional
                         key + // the key
+                        "\b"+
                         @"(" + // capturing group
                         @"[^\[]*" + // anything but an open one zero or more
                         @"\]" + // then a closing
@@ -76,12 +77,12 @@ namespace AcademicSupport
                         );                   
                     foreach (Match match in kRegex.Matches(markDown))
                     {
-                        if (thisKeyAdded == null)
+                        if (thisKeyList == null)
                         {
-                            thisKeyAdded = new List<string>();
-                            doneMatches.Add(key, thisKeyAdded);
+                            thisKeyList = new List<string>();
+                            doneMatches.Add(key, thisKeyList);
                         }
-                        thisKeyAdded.Add(match.Value);
+                        thisKeyList.Add(match.Value);
                     }
                 }
             }
