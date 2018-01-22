@@ -73,7 +73,7 @@
                     </GroupBox>
                     <GroupBox Header="Launch"  Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                         <Grid>
-                            <Button x:Name="Other" Content="Convert any file" Margin="10,5" Click="Other_File"  />
+                            <Button x:Name="Other" Content="Select file to convert" Margin="10,5" Click="Other_File"  />
                         </Grid>
                     </GroupBox>
                 </StackPanel>
