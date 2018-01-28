@@ -502,8 +502,18 @@ namespace AcademicSupport
             {
                 s.citationStyle = CitationStyle.Text;
             }
-            var conversion = s.ToWord(f, null, _fileUnlocker);
+            var conversion = new PandocConversionResult();
+            switch (FormatOut.Text)
+            {
+                case "word":
+                    conversion = s.ToWord(f, null, _fileUnlocker);
+                    break;
+                case "markdown":
+                    conversion = s.ToMarkDown(f, null, _fileUnlocker);
+                    break;
+            }
             var ret = MessageBoxResult.Yes;
+            
             if (!string.IsNullOrWhiteSpace(conversion.Report))
             {
                 ret = MessageBox.Show(this,
