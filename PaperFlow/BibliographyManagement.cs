@@ -67,7 +67,7 @@ namespace AcademicSupport
                         @"[^\]]*" + // anything but a closed one zero or more
                         @")?" + // end capturing group, optional
                         key + // the key
-                        "\b"+
+                        @"\b"+
                         @"(" + // capturing group
                         @"[^\[]*" + // anything but an open one zero or more
                         @"\]" + // then a closing
