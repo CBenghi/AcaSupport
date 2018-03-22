@@ -72,6 +72,12 @@ namespace AcademicSupport
                     TimeStamp = File.LastWriteTime
                 };
                 AddStat(t);
+
+                using (var lw = LogName.AppendText())
+                {
+                    lw.WriteLine(t.Persist());
+                    lw.Close();
+                }
             }
             return true;
         }
@@ -147,6 +153,27 @@ namespace AcademicSupport
                 ret[justdate] += trackedFileStat.Delta;
             }
             return ret;
+        }
+
+        internal FileInfo LogName
+        {
+            get
+            {
+                return new FileInfo(Path.ChangeExtension(File.FullName, ".log"));
+            }
+        }
+
+        internal void SaveLog()
+        {
+
+            using (var lw = LogName.CreateText())
+            {
+                foreach (var stat in _stats)
+                {
+                    lw.WriteLine(stat.Persist());
+                }
+                lw.Close();
+            }
         }
     }
 }

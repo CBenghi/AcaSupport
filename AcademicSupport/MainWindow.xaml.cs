@@ -91,6 +91,7 @@ namespace AcademicSupport
 
         private void UpdateMarkdownList()
         {
+            return;
             var bareNames = new List<string>();
             var fld = GetFolder();
             foreach (var markdownFile in MarkdownFiles)
@@ -233,32 +234,48 @@ namespace AcademicSupport
                 return;
 
             LoadTrackedFiles();
-
-            var log = LogFile;
-            if (log == null)
-                return;
-
-            using (var logF = log.AppendText())
+            foreach (var item in _trackedFiles)
             {
-                foreach (var file in MarkdownFiles)
-                {
-                    var bareName = TrackedFile.BareName(file, fld);
-                    TrackedFile f;
-                    if (!_trackedFiles.TryGetValue(bareName, out f))
-                    {
-                        f = new TrackedFile(file);
-                        _trackedFiles.Add(bareName, f);
-                    }
-                    var needUpdate = f.Evaluate();
-                    if (needUpdate)
-                        logF.WriteLine(f.LatestLog(fld));
-                }
+                item.Value.Evaluate();
             }
         }
 
+
+        private void LoadTrackedFilesV2()
+        {
+            _trackedFiles = new Dictionary<string, TrackedFile>();
+
+            var logs = GetFolder().GetFiles("*.log", SearchOption.AllDirectories);
+            foreach (var log in logs)
+            {
+                var mdName = Path.ChangeExtension(log.FullName, "md");
+                if (File.Exists(mdName))
+                {
+                    var tf = new FileInfo(mdName);
+                    var bname = TrackedFile.BareName(tf, GetFolder());
+                    if (!_trackedFiles.ContainsKey(bname))
+                        _trackedFiles.Add(bname, new TrackedFile(GetFolder(), bname));
+                    using (var logF = log.OpenText())
+                    {
+                        string line;
+                        while ((line = logF.ReadLine()) != null)
+                        {
+                            var stat = TrackedFileStat.Unpersist(line);
+                            _trackedFiles[bname].AddStat(stat);
+                        }
+                    }
+                }
+            }
+            
+            MarkDownList.ItemsSource = TrackedFileNames;
+        }
+
+
+
         private void LoadTrackedFiles()
         {
-
+            LoadTrackedFilesV2();
+            return;
             var mapRe = new Regex(@"#map\s+(?<from>.+)\s+=>\s+(?<to>.+)\s*");
 
             _ignoredFiles = new List<Regex>();
@@ -666,6 +683,14 @@ namespace AcademicSupport
             {
                 var broken = PandocMarkdown.BreakSentences(p);
                 Clipboard.SetText(broken);
+            }
+        }
+
+        private void IndividualSave(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in _trackedFiles.Values)
+            {
+                item.SaveLog();
             }
         }
     }
