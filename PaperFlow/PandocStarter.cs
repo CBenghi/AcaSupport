@@ -50,6 +50,27 @@ namespace AcademicSupport
         /// </summary>
         public bool PreferPaperBib { get; set; } = true;
 
+        public PandocConversionResult ToLatex(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
+        {
+            // if no destination specified then write to system folder
+            if (destFile == null)
+            {
+                destFile = new FileInfo(
+                    Path.Combine(
+                        Path.Combine(_sysFolder.FullName, "pandoc-out"),
+                        sourcefile.Name + ".tex")
+                    );
+            }
+
+            // only if not null.
+            unlocker?.RequestUnlock(destFile.FullName);
+
+            var args = $"";
+            if (WrapPreserve)
+                args = "--wrap=preserve";
+            PandocConversionResult res = RunPandoc(sourcefile, destFile, args);
+            return res;
+        }
 
         public PandocConversionResult ToMarkDown(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
@@ -139,6 +160,10 @@ namespace AcademicSupport
                         sourcefile.Name + ".docx")
                     );
             }
+            var isLatex = false;
+            if (destFile.FullName.EndsWith(".tex"))
+                isLatex = true;
+
 
             // only if not null.
             unlocker?.RequestUnlock(destFile.FullName);
@@ -162,16 +187,22 @@ namespace AcademicSupport
             if (SectionNumbering)
                 FilterList.Add("--number-sections");
             
-            FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB(sourcefile)}\"");
+            if (isLatex)
+                FilterList.Add($"--bibliography \"{BIB(sourcefile)}\"");
+            else
+                FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB(sourcefile)}\"");
 
             var Filters = string.Join(" ", FilterList.ToArray());
 
-            // template logic
             string template = "";
-            var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
-            if (File.Exists(templateFileName))
+            // template logic
+            if (!isLatex)
             {
-                template = $"--reference-docx \"{templateFileName}\"";
+                var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
+                if (File.Exists(templateFileName))
+                {
+                    template = $"--reference-docx \"{templateFileName}\"";
+                }
             }
             
             // -s is for standalone, it produces comprehensive files, rather than fragments

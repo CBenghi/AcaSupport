@@ -53,6 +53,7 @@
                                         <ComboBoxItem IsSelected="True" >word</ComboBoxItem>
                                         <ComboBoxItem>markdown</ComboBoxItem>
                                         <ComboBoxItem>json</ComboBoxItem>
+                                        <ComboBoxItem>latex</ComboBoxItem>
                                     </ComboBox>
                                 </Grid>
                                 <GroupBox Header="Filters" Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">

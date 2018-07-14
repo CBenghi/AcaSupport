@@ -528,6 +528,9 @@ namespace AcademicSupport
                 case "markdown":
                     conversion = s.ToMarkDown(f, null, _fileUnlocker);
                     break;
+                case "latex":
+                    conversion = s.ToWord(f, new FileInfo(f.FullName + ".tex"), _fileUnlocker);
+                    break;
             }
             var ret = MessageBoxResult.Yes;
             
