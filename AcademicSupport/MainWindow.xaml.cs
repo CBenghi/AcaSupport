@@ -496,11 +496,9 @@ namespace AcademicSupport
             var mdSource = SelectedMarkDown;
             var usages = BibliographyManagement.GetUsage(mdSource, avails.Keys);
             
-
-
             // produce new file
             //
-            var mdBibName = Path.ChangeExtension(mdSource.FullName, "bib");
+            var mdBibName = Path.ChangeExtension(mdSource.FullName, "json");
             var mdBib = new FileInfo(mdBibName);
             var ret = MessageBox.Show($"{usages.Count} references used. Write to {mdBib.FullName} file?", "", MessageBoxButton.YesNoCancel);
             if (ret != MessageBoxResult.Yes)
@@ -508,13 +506,19 @@ namespace AcademicSupport
             
             using (var mdBibS = mdBib.CreateText())
             {
+                var first = true;
+                mdBibS.WriteLine("[");
                 foreach (var key in usages.Keys)
                 {
                     var found = avails.TryGetValue(key, out string bib);
                     if (!found)
                         continue;
-                    mdBibS.WriteLine(bib);
+                    if (!first)
+                        mdBibS.WriteLine(",");
+                    mdBibS.Write(bib);
+                    first = false;
                 }
+                mdBibS.WriteLine("]");
             }
         }
 
@@ -718,6 +722,28 @@ namespace AcademicSupport
         private void StyleRefresh(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             UpdateSystem();
+        }
+
+        private void BibFix_Click(object sender, RoutedEventArgs e)
+        {
+            var proceed = MessageBox.Show("This function overwrites the file, make sure to have a backup before continuing.\r\n\r\nDo you wish to proceed?", "Danger", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (proceed != MessageBoxResult.Yes)
+                return;
+
+            // get available bib keys
+            //
+            var s = new PandocStarter(SysFolder);
+            var systemBib = new FileInfo(s.BIB(null));
+            var avails = BibliographyManagement.BibliographyAsDictionary(systemBib);
+
+            // get the matching references
+            //
+            var mdSource = SelectedMarkDown;
+            var replaced = BibliographyManagement.FixReferences(mdSource, avails.Keys.ToArray());
+            using (var fw = mdSource.CreateText())
+            {
+                fw.WriteLine(replaced);
+            }
         }
     }
 }

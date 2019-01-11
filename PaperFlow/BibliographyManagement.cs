@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,38 +15,28 @@ namespace AcademicSupport
 
         public static Regex reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
         
+        // function converted to returning data from a json bibliography format
+        // exported by betterCSL
         public static Dictionary<string, string> BibliographyAsDictionary(FileInfo fullBib)
         {
             var avails = new Dictionary<string, string>();
-            using (var mdSourceS = fullBib.OpenText())
+
+            // read JSON directly from a file
+            using (StreamReader file = File.OpenText(fullBib.FullName))
+            using (JsonTextReader reader = new JsonTextReader(file))
             {
-                string key = "";
-                string val = "";
-                string line;
-                while ((line = mdSourceS.ReadLine()) != null)
+                JArray o2 = (JArray)JToken.ReadFrom(reader);
+
+                foreach (var reference in o2.Children())
                 {
-                    var testNewBib = reNewBib.Match(line);
-                    if (testNewBib.Success)
-                    {
-                        key = "@" + testNewBib.Groups[1].Value;
-                        val = line + "\r\n";
-                    }
-                    else if (line == "}")
-                    {
-                        val += line + "\r\n";
-                        if (key != "")
-                        {
-                            avails.Add(key, val);
-                        }
-                        key = "";
-                        val = "";
-                    }
-                    else
-                    {
-                        val += line + "\r\n";
-                    }
+                    var id = reference.SelectToken("id");
+
+                    avails.Add(id.Value<string>(), reference.ToString());
                 }
             }
+
+       
+
 
             return avails;
         }
@@ -88,5 +80,22 @@ namespace AcademicSupport
             }
             return doneMatches;
         }
+
+        // this functions searches for caseInsensitive matches of available ref keys 
+        // between an @ and a word boundary to attempt fixing when case is incorrect
+        //
+        public static string FixReferences(FileInfo mdSource, string[] keys)
+        {
+            using (var mdSourceS = mdSource.OpenText())
+            {
+                var markDown = mdSourceS.ReadToEnd();
+                foreach (var key in keys)
+                {
+                    Regex search = new Regex("@" + key + @"\b", RegexOptions.IgnoreCase);
+                    markDown = search.Replace(markDown, $"@{key}");
+                }
+                return markDown;
+            }
+        }   
     }
 }

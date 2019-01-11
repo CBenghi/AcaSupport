@@ -19,6 +19,7 @@
                     <!--
                     <Button x:Name="BibExtract2" IsEnabled="False" Content="Fix zot4 bib" Margin="0,0,10,10" Height="24" VerticalAlignment="Bottom" Click="BibExtractTwo_Click" RenderTransformOrigin="-1.744,0.613" HorizontalAlignment="Right" Width="85" />
                     -->
+                    <Button x:Name="BIBFix" Content="Fix references" Margin="380,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="BibFix_Click" />
                     <Button x:Name="BibExtract" Content="Extract bib" Margin="10,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="BibExtract_Click" />
                     <Button x:Name="Emphasis" Content="Extract italics" Margin="100,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="EmphasisExtract_Click" />
                     <Button x:Name="TLA" Content="Acronyms" Margin="190,0,0,10" HorizontalAlignment="Left" Width="85" Height="24" VerticalAlignment="Bottom" Click="CheckAcronyms" />

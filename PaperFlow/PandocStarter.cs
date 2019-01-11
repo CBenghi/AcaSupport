@@ -29,7 +29,7 @@ namespace AcademicSupport
             // PreferPaperBib
             if (PreferPaperBib && sourceFile!= null)
             {
-                var localfile = Path.ChangeExtension(sourceFile.FullName, ".bib");
+                var localfile = Path.ChangeExtension(sourceFile.FullName, "json");
                 if (File.Exists(localfile))
                     return localfile;
 
