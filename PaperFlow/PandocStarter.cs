@@ -20,7 +20,8 @@ namespace AcademicSupport
 
         public string citationStyle = "elsevier-harvard.csl";
 
-        private string bibLibrary = "biblatex.bib";
+        // private string bibLibrary = "biblatex.bib";
+        private string bibLibrary = "lib.json";
 
         private string CSL => Path.Combine(_sysFolder.FullName, citationStyle);
         public string BIB(FileInfo sourceFile)
