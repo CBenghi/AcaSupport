@@ -415,20 +415,38 @@ namespace AcademicSupport
             }
             if (GetBool(OpenWhenDone))
             {
-                var ret = MessageBoxResult.Yes;
-                if (!string.IsNullOrWhiteSpace(conversion.Report))
+                if (File.Exists(conversion.ConvertedFile.FullName))
                 {
-                    ret = MessageBox.Show(this,
-                        $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
-                        MessageBoxButton.YesNoCancel);
+                    var ret = MessageBoxResult.Yes;
+                    if (!string.IsNullOrWhiteSpace(conversion.Report))
+                    {
+                        ret = MessageBox.Show(this,
+                            $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
+                            MessageBoxButton.YesNoCancel);
+                    }
+                    if (ret == MessageBoxResult.Yes)
+                    {
+                        Process.Start(conversion.ConvertedFile.FullName);
+                    }
+                    else if (ret == MessageBoxResult.No)
+                    {
+                        Clipboard.SetText(conversion.Report);
+                    }
                 }
-                if (ret == MessageBoxResult.Yes)
+                else
                 {
-                    Process.Start(conversion.ConvertedFile.FullName);
-                }
-                else if (ret == MessageBoxResult.No)
-                {
-                    Clipboard.SetText(conversion.Report);
+                    var ret = MessageBoxResult.Yes;
+                    if (!string.IsNullOrWhiteSpace(conversion.Report))
+                    {
+                        ret = MessageBox.Show(this,
+                            $"Error in conversion, file not generated, " +
+                            $"message is:\r\n\r\n{conversion.Report}\r\n\r\nCopy error message to the clipboard.", "Error",
+                            MessageBoxButton.YesNoCancel);
+                    }
+                    if (ret == MessageBoxResult.Yes)
+                    {
+                        Clipboard.SetText(conversion.Report);
+                    }
                 }
             }
             else
