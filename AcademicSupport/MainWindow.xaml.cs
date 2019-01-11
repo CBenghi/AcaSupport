@@ -696,5 +696,10 @@ namespace AcademicSupport
                 item.SaveLog();
             }
         }
+
+        private void StyleRefresh(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            UpdateSystem();
+        }
     }
 }

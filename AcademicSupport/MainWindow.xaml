@@ -45,7 +45,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Style:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <Label Content="Style:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDoubleClick="StyleRefresh" />
                                     <ComboBox Grid.Column="1" Margin="10,5" x:Name="CitationStyle" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
 
                                     <Label Grid.Row="1" Content="Format:" Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
