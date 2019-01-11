@@ -180,7 +180,7 @@ namespace AcademicSupport
                 FilterList.Add("--filter pandoc-fignos");
 
             if (PlaceTable)
-                FilterList.Add("--filter pandoc-placetable");
+                FilterList.Add(@"--filter ""C:\Users\sgmk2\AppData\Roaming\cabal\bin\pandoc-placetable""");
 
             // --number-sections can be added when working with html
             // it's ignored in docx anyway
@@ -201,7 +201,7 @@ namespace AcademicSupport
                 var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
                 if (File.Exists(templateFileName))
                 {
-                    template = $"--reference-docx \"{templateFileName}\"";
+                    template = $"--reference-doc \"{templateFileName}\"";
                 }
             }
             
@@ -215,7 +215,7 @@ namespace AcademicSupport
         private static PandocConversionResult RunPandoc(FileInfo sourcefile, FileInfo destFile, string args)
         {
             args = $"\"{sourcefile.FullName}\" {args} -o \"{destFile.FullName}\"";
-            const string command = @"pandoc.exe";
+            const string command = @"""C:\Program Files\Pandoc\pandoc.exe""";
             var cmdline = command + " " + args;
             // instantiate process
             var process = new Process
