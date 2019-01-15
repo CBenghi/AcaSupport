@@ -180,8 +180,16 @@ namespace AcademicSupport
             if (FilterFigno)
                 FilterList.Add("--filter pandoc-fignos");
 
+
+
+
             if (PlaceTable)
-                FilterList.Add(@"--filter ""C:\Users\sgmk2\AppData\Roaming\cabal\bin\pandoc-placetable""");
+            {
+                if (File.Exists(@"C:\Users\sgmk2\AppData\Roaming\cabal\bin\pandoc-placetable.exe"))
+                    FilterList.Add(@"--filter ""C:\Users\sgmk2\AppData\Roaming\cabal\bin\pandoc-placetable""");
+                else
+                    FilterList.Add(@"--filter pandoc-placetable");
+            }
 
             // --number-sections can be added when working with html
             // it's ignored in docx anyway
@@ -213,10 +221,33 @@ namespace AcademicSupport
             return res;
         }
 
+        private static string command
+        {
+            get
+            {
+                var opts = new string[]
+                {
+                    @"C:\Program Files\Pandoc\pandoc.exe",
+                    @"C:\Program Files (x86)\Pandoc\pandoc.exe",
+                };
+
+                foreach (var opt in opts)
+                {
+                    if (File.Exists(opt))
+                        return ("\"" + opt + "\"");
+                }
+                return "";
+            }
+        }
+            
+            
+
         private static PandocConversionResult RunPandoc(FileInfo sourcefile, FileInfo destFile, string args)
         {
             args = $"\"{sourcefile.FullName}\" {args} -o \"{destFile.FullName}\"";
-            const string command = @"""C:\Program Files\Pandoc\pandoc.exe""";
+            if (command == "")
+                return new PandocConversionResult() { ExitCode = 1 };
+            
             var cmdline = command + " " + args;
             // instantiate process
             var process = new Process
