@@ -415,7 +415,7 @@ namespace AcademicSupport
             }
             if (GetBool(OpenWhenDone))
             {
-                if (File.Exists(conversion.ConvertedFile.FullName))
+                if (conversion?.ConvertedFile?.FullName != null && File.Exists(conversion.ConvertedFile.FullName))
                 {
                     var ret = MessageBoxResult.Yes;
                     if (!string.IsNullOrWhiteSpace(conversion.Report))
