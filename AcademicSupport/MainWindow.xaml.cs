@@ -57,6 +57,12 @@ namespace AcademicSupport
             {
                 CitationStyle.Items.Add(fileInfo.Name);
             }
+            var f = CitationStyle.Items.OfType<string>().FirstOrDefault(x => x.Contains("url"));
+            if (f!= null)
+            {
+                CitationStyle.SelectedItem = f;
+            }
+
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
