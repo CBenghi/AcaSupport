@@ -39,11 +39,20 @@ namespace AcademicSupport
             // otherwise convert
             Console.Write($" - \"{png.FullName}\"... ");
 
-            const string command = @"C:\Program Files\Inkscape\inkscape.exe";
+            const string command = @"C:\Program Files\Inkscape\bin\inkscape.exe";
             var args = $"--file=\"{svg.FullName}\" " +
                        $"--export-png=\"{png.FullName}\" " +
                        $"--export-dpi={ResolutionDPI} " +
                        "--export-area-page";
+
+            args = string.Join(" ", new string[] {
+                $"--export-file=\"{png.FullName}\" " +
+                $"--export-dpi={ResolutionDPI}",
+                "--export-area-page",
+                $"\"{svg.FullName}\""
+                });
+
+
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PaperFlow</name>
+    </assembly>
+    <members>
+        <member name="P:AcademicSupport.PandocStarter.PreferPaperBib">
+            <summary>
+            This bit determines if a local bib file has to be preferred to the main repository, when available.
+            </summary>
+        </member>
+    </members>
+</doc>
