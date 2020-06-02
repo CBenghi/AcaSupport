@@ -46,7 +46,7 @@ namespace AcademicSupport
                        "--export-area-page";
 
             args = string.Join(" ", new string[] {
-                $"--export-file=\"{png.FullName}\" " +
+                $"--export-filename=\"{png.FullName}\" " +
                 $"--export-dpi={ResolutionDPI}",
                 "--export-area-page",
                 $"\"{svg.FullName}\""
