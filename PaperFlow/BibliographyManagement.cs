@@ -12,7 +12,6 @@ namespace AcademicSupport
 {
     public class BibliographyManagement
     {
-
         public static Regex reNewBib = new Regex("^@[a-z]+{(.+),$", RegexOptions.Compiled);
         
         // function converted to returning data from a json bibliography format
@@ -20,7 +19,8 @@ namespace AcademicSupport
         public static Dictionary<string, string> BibliographyAsDictionary(FileInfo fullBib)
         {
             var avails = new Dictionary<string, string>();
-
+            if (!fullBib.Exists)
+                return avails;
             // read JSON directly from a file
             using (StreamReader file = File.OpenText(fullBib.FullName))
             using (JsonTextReader reader = new JsonTextReader(file))

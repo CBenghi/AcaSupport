@@ -115,10 +115,8 @@ namespace AcademicSupport
             return res;
         }
 
-
         public PandocConversionResult ToWord(FileInfo sourcefile, FileInfo destFile = null, FileUnlocker unlocker = null)
         {
-
             if (ImageConverter != null)
             {
                 var errorImages = new List<string>();
@@ -180,9 +178,6 @@ namespace AcademicSupport
             if (FilterFigno)
                 FilterList.Add("--filter pandoc-fignos");
 
-
-
-
             if (PlaceTable)
             {
                 if (File.Exists(@"C:\Users\sgmk2\AppData\Roaming\cabal\bin\pandoc-placetable.exe"))
@@ -195,11 +190,16 @@ namespace AcademicSupport
             // it's ignored in docx anyway
             if (SectionNumbering)
                 FilterList.Add("--number-sections");
-            
+
             if (isLatex)
                 FilterList.Add($"--bibliography \"{BIB(sourcefile)}\"");
             else
-                FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB(sourcefile)}\"");
+            {
+                if (File.Exists(CSL) && File.Exists(BIB(sourcefile)))
+                    FilterList.Add($"--filter pandoc-citeproc --csl \"{CSL}\" --bibliography \"{BIB(sourcefile)}\"");
+                else if (File.Exists(BIB(sourcefile)))
+                    FilterList.Add($"--filter pandoc-citeproc --bibliography \"{BIB(sourcefile)}\"");
+            }
 
             var Filters = string.Join(" ", FilterList.ToArray());
 
@@ -221,12 +221,13 @@ namespace AcademicSupport
             return res;
         }
 
-        private static string command
+        private static string pandocExePath
         {
             get
             {
                 var opts = new string[]
                 {
+                    @"C:\ProgramData\chocolatey\bin\pandoc.exe", 
                     @"C:\Program Files\Pandoc\pandoc.exe",
                     @"C:\Program Files (x86)\Pandoc\pandoc.exe",
                 };
@@ -245,16 +246,16 @@ namespace AcademicSupport
         private static PandocConversionResult RunPandoc(FileInfo sourcefile, FileInfo destFile, string args)
         {
             args = $"\"{sourcefile.FullName}\" {args} -o \"{destFile.FullName}\"";
-            if (command == "")
+            if (pandocExePath == "")
                 return new PandocConversionResult() { ExitCode = 1 };
-            
-            var cmdline = command + " " + args;
+
+            Debug.WriteLine("Pandoc arguments: " + args);
             // instantiate process
             var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = command,
+                    FileName = pandocExePath,
                     Arguments = args,
                     WorkingDirectory = sourcefile.DirectoryName,
                     UseShellExecute = false,

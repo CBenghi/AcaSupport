@@ -35,9 +35,9 @@ namespace AcademicSupport
             var dir = new DirectoryInfo(TxtFolder.Text);
             if (!dir.Exists)
                 return;
+            UpdateDisplay();
             if (dir.GetDirectories(".system").FirstOrDefault() != null)
             {
-                UpdateDisplay();
                 UpdateSystem();
             }
         }
@@ -133,6 +133,8 @@ namespace AcademicSupport
 
         private void UpdateDailyCountBars()
         {
+            if (!_trackedFiles.Any())
+                return;
             var sc = new SeriesCollection();
             var runDate = MinDate().Date; // start from date only;
             var oneWeekDate = DateTime.Now.Date.AddDays(-7);
@@ -187,6 +189,8 @@ namespace AcademicSupport
         private void UpdateFileCountCurve()
         {
             var sc = new SeriesCollection();
+            if (!_trackedFiles.Any())
+                return;
             var minDate = MinDate().Date;
             foreach (var trackedFilesValue in FileToChart)
             {
@@ -419,53 +423,27 @@ namespace AcademicSupport
                     break;
 
             }
+            
+            if (!string.IsNullOrWhiteSpace(conversion?.Report))
+            {
+                var ret = MessageBox.Show(this,
+                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I copy the error to the clipboard and stop processing?", "Error",
+                    MessageBoxButton.YesNoCancel);
+                if (ret == MessageBoxResult.Yes)
+                {
+                    Clipboard.SetText(conversion.Report);
+                    return;
+                }
+            }
             if (GetBool(OpenWhenDone))
             {
                 if (conversion?.ConvertedFile?.FullName != null && File.Exists(conversion.ConvertedFile.FullName))
                 {
-                    var ret = MessageBoxResult.Yes;
-                    if (!string.IsNullOrWhiteSpace(conversion.Report))
-                    {
-                        ret = MessageBox.Show(this,
-                            $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
-                            MessageBoxButton.YesNoCancel);
-                    }
-                    if (ret == MessageBoxResult.Yes)
-                    {
-                        Process.Start(conversion.ConvertedFile.FullName);
-                    }
-                    else if (ret == MessageBoxResult.No)
-                    {
-                        Clipboard.SetText(conversion.Report);
-                    }
+                    Process.Start(conversion.ConvertedFile.FullName);
                 }
                 else
                 {
-                    var ret = MessageBoxResult.Yes;
-                    if (!string.IsNullOrWhiteSpace(conversion.Report))
-                    {
-                        ret = MessageBox.Show(this,
-                            $"Error in conversion, file not generated, " +
-                            $"message is:\r\n\r\n{conversion.Report}\r\n\r\nCopy error message to the clipboard.", "Error",
-                            MessageBoxButton.YesNoCancel);
-                    }
-                    if (ret == MessageBoxResult.Yes)
-                    {
-                        Clipboard.SetText(conversion.Report);
-                    }
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(conversion.Report))
-                {
-                    var ret = MessageBox.Show(this,
-                        $"Error in conversion:\r\n\r\n{conversion.Report}\r\nShall I copy the error to the clipboard.", "Error",
-                        MessageBoxButton.YesNoCancel);
-                    if (ret == MessageBoxResult.Yes)
-                    {
-                        Clipboard.SetText(conversion.Report);
-                    }
+                    MessageBox.Show("Error", $"Error in conversion, file not found.", MessageBoxButton.OK);
                 }
             }
         }
@@ -542,7 +520,15 @@ namespace AcademicSupport
 
             var f = new FileInfo(fn);
 
+            Svg svg = new Svg()
+            {
+                ForceRefresh = (bool)InkscapeRefresh.IsChecked,
+                ResolutionDPI = Convert.ToInt32(InkscapeResolution.Text),
+                TimeOutSeconds = Convert.ToInt32(InkscapeTimeout.Text)
+            };
+
             var s = new PandocStarter(SysFolder);
+            s.ImageConverter = svg;
             if (!string.IsNullOrEmpty(CitationStyle.Text))
             {
                 s.citationStyle = CitationStyle.Text;
