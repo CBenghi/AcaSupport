@@ -507,64 +507,77 @@ namespace AcademicSupport
         }
 
         private void Other_File(object sender, RoutedEventArgs e)
-        {
-            var d = new OpenFileDialog
-            {
-                Multiselect = false,
-                DefaultExt = ".md",
-            };
-            d.ShowDialog(this);
-            if (string.IsNullOrWhiteSpace(d.FileName))
+		{
+			var d = new OpenFileDialog
+			{
+				Multiselect = false,
+				DefaultExt = ".md",
+			};
+			d.ShowDialog(this);
+			if (string.IsNullOrWhiteSpace(d.FileName))
+				return;
+			var fn = d.FileName;
+
+			var f = new FileInfo(fn);
+            if (!f.Exists)
                 return;
-            var fn = d.FileName;
 
-            var f = new FileInfo(fn);
+            _lastManualConvert = f;
+            lblSelectedDoc.Content = f.Name;
+            btnConvertAgain.IsEnabled = true;
 
-            Svg svg = new Svg()
-            {
-                ForceRefresh = (bool)InkscapeRefresh.IsChecked,
-                ResolutionDPI = Convert.ToInt32(InkscapeResolution.Text),
-                TimeOutSeconds = Convert.ToInt32(InkscapeTimeout.Text)
-            };
+            ConvertFile(f);
+		}
 
-            var s = new PandocStarter(SysFolder);
-            s.ImageConverter = svg;
-            if (!string.IsNullOrEmpty(CitationStyle.Text))
-            {
-                s.citationStyle = CitationStyle.Text;
-            }
-            var conversion = new PandocConversionResult();
-            switch (FormatOut.Text)
-            {
-                case "word":
-                    conversion = s.ToWord(f, null, _fileUnlocker);
-                    break;
-                case "markdown":
-                    conversion = s.ToMarkDown(f, null, _fileUnlocker);
-                    break;
-                case "latex":
-                    conversion = s.ToWord(f, new FileInfo(f.FullName + ".tex"), _fileUnlocker);
-                    break;
-            }
-            var ret = MessageBoxResult.Yes;
-            
-            if (!string.IsNullOrWhiteSpace(conversion.Report))
-            {
-                ret = MessageBox.Show(this,
-                    $"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
-                    MessageBoxButton.YesNoCancel);
-            }
-            if (ret == MessageBoxResult.Yes)
-            {
-                Process.Start(conversion.ConvertedFile.FullName);
-            }
-            else if (ret == MessageBoxResult.No)
-            {
-                Clipboard.SetText(conversion.Report);
-            }
-        }
+        FileInfo _lastManualConvert = null;
 
-        private void EmphasisExtract_Click(object sender, RoutedEventArgs e)
+		private void ConvertFile(FileInfo f)
+		{
+			Svg svg = new Svg()
+			{
+				ForceRefresh = (bool)InkscapeRefresh.IsChecked,
+				ResolutionDPI = Convert.ToInt32(InkscapeResolution.Text),
+				TimeOutSeconds = Convert.ToInt32(InkscapeTimeout.Text)
+			};
+
+			var s = new PandocStarter(SysFolder);
+			s.ImageConverter = svg;
+			if (!string.IsNullOrEmpty(CitationStyle.Text))
+			{
+				s.citationStyle = CitationStyle.Text;
+			}
+			var conversion = new PandocConversionResult();
+			switch (FormatOut.Text)
+			{
+				case "word":
+					conversion = s.ToWord(f, null, _fileUnlocker);
+					break;
+				case "markdown":
+					conversion = s.ToMarkDown(f, null, _fileUnlocker);
+					break;
+				case "latex":
+					conversion = s.ToWord(f, new FileInfo(f.FullName + ".tex"), _fileUnlocker);
+					break;
+			}
+			var ret = MessageBoxResult.Yes;
+
+			if (!string.IsNullOrWhiteSpace(conversion.Report))
+			{
+				ret = MessageBox.Show(this,
+					$"Error in conversion:\r\n\r\n{conversion.Report}\r\nshall I open the file?\r\nChoosing No copies error to the clipboard.", "Error",
+					MessageBoxButton.YesNoCancel);
+			}
+			if (ret == MessageBoxResult.Yes)
+			{
+				Process.Start(conversion.ConvertedFile.FullName);
+			}
+			else if (ret == MessageBoxResult.No)
+			{
+				Clipboard.SetText(conversion.Report);
+			}
+		}
+
+		private void EmphasisExtract_Click(object sender, RoutedEventArgs e)
         {
             var reRefKey = new Regex(@"\*\w+( \w+){0,3}\*");
 
@@ -737,5 +750,10 @@ namespace AcademicSupport
                 fw.WriteLine(replaced);
             }
         }
-    }
+
+		private void ConvertAgain_Click(object sender, RoutedEventArgs e)
+		{
+            ConvertFile(_lastManualConvert);
+		}
+	}
 }

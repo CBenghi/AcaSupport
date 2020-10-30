@@ -148,7 +148,20 @@ namespace AcademicSupport
                 //var d = new DirectoryInfo(Path.Combine(sourcefile.DirectoryName, "Charts"));
                 //ImageConverter.ConvertVectorGraphics(d);
             }
-            
+
+            string template = "";
+            // template logic
+            var WordProcExtension = ".docx";
+			foreach (var extension in new [] { "template.docx", "template.odt" })
+			{
+                var templateFileName = Path.ChangeExtension(sourcefile.FullName, extension);
+                if (File.Exists(templateFileName))
+                {
+                    template = $"--reference-doc \"{templateFileName}\"";
+                    WordProcExtension = Path.GetExtension(templateFileName);
+                    break;
+                }
+            }
 
             // if no destination specified then write to system folder
             if (destFile == null)
@@ -156,12 +169,15 @@ namespace AcademicSupport
                 destFile = new FileInfo(
                     Path.Combine(
                         Path.Combine(_sysFolder.FullName, "pandoc-out"),
-                        sourcefile.Name + ".docx")
+                        sourcefile.Name + WordProcExtension)
                     );
             }
             var isLatex = false;
             if (destFile.FullName.EndsWith(".tex"))
+            {
                 isLatex = true;
+                template = "";
+            }
 
 
             // only if not null.
@@ -202,17 +218,6 @@ namespace AcademicSupport
             }
 
             var Filters = string.Join(" ", FilterList.ToArray());
-
-            string template = "";
-            // template logic
-            if (!isLatex)
-            {
-                var templateFileName = Path.ChangeExtension(sourcefile.FullName, "template.docx");
-                if (File.Exists(templateFileName))
-                {
-                    template = $"--reference-doc \"{templateFileName}\"";
-                }
-            }
             
             // -s is for standalone, it produces comprehensive files, rather than fragments
             //

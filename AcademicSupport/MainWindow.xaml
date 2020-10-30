@@ -73,12 +73,15 @@
                             </StackPanel>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Launch"  Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <GroupBox Header="Launch"  Margin="10,5" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="98">
                         <Grid>
-                            <Button x:Name="Other" Content="Select file to convert" Margin="10,5" Click="Other_File"  />
-                        </Grid>
+                            <Button x:Name="Other" Content="Select file to convert" Margin="10,5,10,36" Click="Other_File"  />
+							<Button x:Name="btnConvertAgain" Margin="239,44,10,10" Content="Again" IsEnabled="False" Click="ConvertAgain_Click" />
+							<Label x:Name="lblSelectedDoc" Content="undefined" HorizontalAlignment="Left" Height="31" Margin="10,44,0,0" VerticalAlignment="Top" Width="224"/>
+						</Grid>
                     </GroupBox>
-                </StackPanel>
+					
+				</StackPanel>
             </TabItem>
             <TabItem Header="InkScape">
                 <StackPanel>
